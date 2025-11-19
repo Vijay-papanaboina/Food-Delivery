@@ -1,0 +1,89 @@
+# Root .gitignore for Food Delivery Project
+# This applies to all sub-projects (Backend, Customer Frontend, Restaurant Frontend, Courier Frontend)
+
+# Dependencies
+node_modules/
+**/node_modules/
+yarn.lock
+pnpm-lock.yaml
+
+# Environment Variables
+.env
+.env.*
+!.env.example
+*.env
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# Runtime & Process Files
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# Testing & Coverage
+coverage/
+.nyc_output/
+*.lcov
+
+# Build Outputs
+dist/
+build/
+out/
+.next/
+.nuxt/
+
+# Cache Directories
+.cache/
+.parcel-cache/
+.turbo/
+.vite/
+.webpack/
+
+# IDE & Editor Files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# OS Files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# Temporary Files
+tmp/
+temp/
+*.tmp
+*.temp
+*.bak
+*.backup
+*.old
+
+# Database Files
+*.db
+*.sqlite
+*.sqlite3
+
+# Docker
+.docker/
+docker-compose.override.yml
+
+# Misc
+.cursorignore
+
+# TEMPORARY: Ignore mongoose files for first commit (remove after)
+*mongoose*
