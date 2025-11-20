@@ -1,7 +1,6 @@
 import { config } from "@/config/env";
 import { logger } from "@/lib/logger";
 import type { User, DeliveryAddress } from "@/types";
-import type { BackendUser, BackendAddress } from "@/types/api";
 import { ApiService } from "./baseApi";
 
 // User API
@@ -13,23 +12,12 @@ export class UserApi extends ApiService {
   getProfile = async (): Promise<{ message: string; user: User }> => {
     const result = await this.get<{
       message: string;
-      user: BackendUser;
+      user: User;
     }>("/api/user-service/users/profile");
-
-    // Transform BackendUser to User
-    const user: User = {
-      id: result.user.id,
-      name: result.user.name,
-      email: result.user.email,
-      phone: result.user.phone,
-      isActive: result.user.is_active,
-      createdAt: result.user.created_at,
-      updatedAt: result.user.updated_at,
-    };
 
     return {
       message: result.message,
-      user,
+      user: result.user,
     };
   };
 
@@ -39,23 +27,12 @@ export class UserApi extends ApiService {
   }): Promise<{ message: string; user: User }> => {
     const result = await this.put<{
       message: string;
-      user: BackendUser;
+      user: User;
     }>("/api/user-service/users/profile", userData);
-
-    // Transform BackendUser to User
-    const user: User = {
-      id: result.user.id,
-      name: result.user.name,
-      email: result.user.email,
-      phone: result.user.phone,
-      isActive: result.user.is_active,
-      createdAt: result.user.created_at,
-      updatedAt: result.user.updated_at,
-    };
 
     return {
       message: result.message,
-      user,
+      user: result.user,
     };
   };
 
@@ -73,23 +50,12 @@ export class UserApi extends ApiService {
   }> => {
     const result = await this.get<{
       message: string;
-      addresses: BackendAddress[];
+      addresses: DeliveryAddress[];
     }>("/api/user-service/users/addresses");
-
-    // Transform BackendAddress to DeliveryAddress
-    const addresses: DeliveryAddress[] = result.addresses.map((addr) => ({
-      id: addr.id,
-      label: addr.label,
-      street: addr.street,
-      city: addr.city,
-      state: addr.state,
-      zipCode: addr.zipCode,
-      isDefault: addr.isDefault,
-    }));
 
     return {
       message: result.message,
-      addresses,
+      addresses: result.addresses,
     };
   };
 
@@ -103,7 +69,7 @@ export class UserApi extends ApiService {
   }): Promise<{ message: string; address: DeliveryAddress }> => {
     const result = await this.post<{
       message: string;
-      address: BackendAddress;
+      address: DeliveryAddress;
     }>("/api/user-service/users/addresses", {
       label: addressData.label,
       street: addressData.street,
@@ -113,20 +79,9 @@ export class UserApi extends ApiService {
       isDefault: addressData.isDefault || false,
     });
 
-    // Transform BackendAddress to DeliveryAddress
-    const address: DeliveryAddress = {
-      id: result.address.id,
-      label: result.address.label,
-      street: result.address.street,
-      city: result.address.city,
-      state: result.address.state,
-      zipCode: result.address.zipCode,
-      isDefault: result.address.isDefault,
-    };
-
     return {
       message: result.message,
-      address,
+      address: result.address,
     };
   };
 
@@ -143,7 +98,7 @@ export class UserApi extends ApiService {
   ): Promise<{ message: string; address: DeliveryAddress }> => {
     const result = await this.put<{
       message: string;
-      address: BackendAddress;
+      address: DeliveryAddress;
     }>(`/api/user-service/users/addresses/${addressId}`, {
       label: addressData.label,
       street: addressData.street,
@@ -153,20 +108,9 @@ export class UserApi extends ApiService {
       isDefault: addressData.isDefault,
     });
 
-    // Transform BackendAddress to DeliveryAddress
-    const address: DeliveryAddress = {
-      id: result.address.id,
-      label: result.address.label,
-      street: result.address.street,
-      city: result.address.city,
-      state: result.address.state,
-      zipCode: result.address.zipCode,
-      isDefault: result.address.isDefault,
-    };
-
     return {
       message: result.message,
-      address,
+      address: result.address,
     };
   };
 

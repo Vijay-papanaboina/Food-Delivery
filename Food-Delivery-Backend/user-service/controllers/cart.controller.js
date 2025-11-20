@@ -16,6 +16,7 @@ export const getCart = async (req, res) => {
     res.json({
       message: "Cart retrieved successfully",
       items: items.map((item) => ({
+        id: item.id,
         itemId: item.itemId,
         quantity: item.quantity,
       })),

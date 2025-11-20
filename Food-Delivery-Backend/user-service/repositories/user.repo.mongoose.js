@@ -8,11 +8,11 @@ export const createUser = async (userData) => {
 };
 
 export const getUserByEmail = async (email) => {
-  return await User.findOne({ email }).lean();
+  return await User.findOne({ email });
 };
 
 export const getUserById = async (id) => {
-  return await User.findById(id).lean();
+  return await User.findById(id);
 };
 
 export const updateUser = async (id, userData) => {
@@ -20,7 +20,7 @@ export const updateUser = async (id, userData) => {
     id,
     { $set: userData },
     { new: true, runValidators: true }
-  ).lean();
+  );
 };
 
 export const deleteUser = async (id) => {
@@ -40,7 +40,7 @@ export const createAddress = async (userId, addressData) => {
 };
 
 export const getAddressesByUserId = async (userId) => {
-  const user = await User.findById(userId).select("addresses").lean();
+  const user = await User.findById(userId).select("addresses");
   if (!user) return [];
   
   // Sort by isDefault (true first), then by createdAt
@@ -53,10 +53,10 @@ export const getAddressesByUserId = async (userId) => {
 };
 
 export const getAddressById = async (addressId, userId) => {
-  const user = await User.findById(userId).lean();
+  const user = await User.findById(userId);
   if (!user) return null;
   
-  return user.addresses.find(addr => addr._id.toString() === addressId);
+  return user.addresses.find(addr => addr.id === addressId);
 };
 
 export const updateAddress = async (addressId, userId, addressData) => {
@@ -102,7 +102,7 @@ export const setDefaultAddress = async (addressId, userId) => {
 };
 
 export const getDefaultAddress = async (userId) => {
-  const user = await User.findById(userId).select("addresses").lean();
+  const user = await User.findById(userId).select("addresses");
   if (!user) return null;
   
   return user.addresses.find((addr) => addr.isDefault);

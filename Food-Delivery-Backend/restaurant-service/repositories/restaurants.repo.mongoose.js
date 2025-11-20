@@ -24,37 +24,16 @@ export async function upsertRestaurant(restaurantData) {
   return newRestaurant.toObject();
 }
 
-// Helper to transform restaurant document
-function transformRestaurant(r) {
-  if (!r) return null;
-  return {
-    restaurant_id: r._id.toString(),
-    id: r._id.toString(),
-    owner_id: r.ownerId.toString(),
-    name: r.name,
-    cuisine: r.cuisine,
-    address: r.address,
-    phone: r.phone,
-    rating: r.rating,
-    delivery_time: r.deliveryTime,
-    delivery_fee: r.deliveryFee,
-    is_open: r.isOpen,
-    opening_time: r.openingTime,
-    closing_time: r.closingTime,
-    is_active: r.isActive,
-    image_url: r.imageUrl,
-    created_at: r.createdAt,
-  };
-}
+
 
 export async function getRestaurant(restaurantId) {
-  const restaurant = await Restaurant.findById(restaurantId).lean();
-  return transformRestaurant(restaurant);
+  const restaurant = await Restaurant.findById(restaurantId);
+  return restaurant ? restaurant.toObject() : null;
 }
 
 export async function getRestaurantByOwner(ownerId) {
-  const restaurant = await Restaurant.findOne({ ownerId }).lean();
-  return transformRestaurant(restaurant);
+  const restaurant = await Restaurant.findOne({ ownerId });
+  return restaurant ? restaurant.toObject() : null;
 }
 
 export async function getRestaurants(filters = {}) {
@@ -76,27 +55,10 @@ export async function getRestaurants(filters = {}) {
     dbQuery = dbQuery.limit(Number(filters.limit));
   }
 
-  const restaurants = await dbQuery.lean();
+  const restaurants = await dbQuery;
 
   // Transform to match original Drizzle output format (snake_case)
-  return restaurants.map(r => ({
-    restaurant_id: r._id.toString(),
-    id: r._id.toString(), // Frontend might expect 'id' or 'restaurant_id'
-    owner_id: r.ownerId.toString(),
-    name: r.name,
-    cuisine: r.cuisine,
-    address: r.address,
-    phone: r.phone,
-    rating: r.rating,
-    delivery_time: r.deliveryTime,
-    delivery_fee: r.deliveryFee,
-    is_open: r.isOpen,
-    opening_time: r.openingTime,
-    closing_time: r.closingTime,
-    is_active: r.isActive,
-    image_url: r.imageUrl,
-    created_at: r.createdAt,
-  }));
+  return restaurants.map(r => r.toObject());
 }
 
 export async function toggleRestaurantStatus(restaurantId, isOpen) {
@@ -106,7 +68,6 @@ export async function toggleRestaurantStatus(restaurantId, isOpen) {
 export async function getRestaurantStatus(restaurantId) {
   return await Restaurant.findById(restaurantId)
     .select("isOpen openingTime closingTime isActive")
-    .lean();
 }
 
 export async function getRestaurantStats() {

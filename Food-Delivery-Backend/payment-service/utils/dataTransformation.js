@@ -7,8 +7,8 @@ export const transformPayment = (payment) => {
   if (!payment) return null;
 
   return {
-    id: payment._id.toString(),
-    paymentId: payment._id.toString(), // Keep for backward compatibility
+    id: payment.id,
+    paymentId: payment.id, // Keep for backward compatibility
     orderId: payment.orderId?.toString(),
     userId: payment.userId?.toString(),
     amount: payment.amount,

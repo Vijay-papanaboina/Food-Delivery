@@ -1,4 +1,4 @@
-import { getRestaurant } from "../repositories/restaurants.repo.js";
+import { getRestaurant } from "../repositories/restaurants.repo.mongoose.js";
 
 export const requireRestaurantOwnership = async (req, res, next) => {
   const restaurantId = req.params.restaurantId || req.params.id;

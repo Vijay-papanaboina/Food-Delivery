@@ -26,18 +26,9 @@ export async function upsertPayment(p) {
       upsert: true,
       setDefaultsOnInsert: true,
     }
-  ).lean();
+  );
 
-  return {
-    ...result,
-    payment_id: result._id.toString(),
-    order_id: result.orderId,
-    user_id: result.userId,
-    transaction_id: result.transactionId,
-    failure_reason: result.failureReason,
-    created_at: result.createdAt,
-    processed_at: result.processedAt,
-  };
+  return result.toObject();
 }
 
 // Update only selected fields on an existing payment row
@@ -59,23 +50,11 @@ export async function updatePaymentFields(paymentId, fields) {
 
 export async function getPaymentByOrderId(orderId) {
   const payment = await Payment.findOne({ orderId })
-    .sort({ createdAt: -1 })
-    .lean();
+    .sort({ createdAt: -1 });
 
   if (!payment) return null;
 
-  return {
-    payment_id: payment._id.toString(),
-    order_id: payment.orderId,
-    amount: payment.amount,
-    method: payment.method,
-    user_id: payment.userId,
-    status: payment.status,
-    transaction_id: payment.transactionId,
-    failure_reason: payment.failureReason,
-    created_at: payment.createdAt,
-    processed_at: payment.processedAt,
-  };
+  return payment.toObject();
 }
 
 export async function getPayments(filters = {}) {
@@ -89,19 +68,8 @@ export async function getPayments(filters = {}) {
     q = q.limit(Number(filters.limit));
   }
 
-  const payments = await q.lean();
-  return payments.map((p) => ({
-    payment_id: p._id.toString(),
-    order_id: p.orderId,
-    amount: p.amount,
-    method: p.method,
-    user_id: p.userId,
-    status: p.status,
-    transaction_id: p.transactionId,
-    failure_reason: p.failureReason,
-    created_at: p.createdAt,
-    processed_at: p.processedAt,
-  }));
+  const payments = await q;
+  return payments.map((p) => p.toObject());
 }
 
 export async function getPaymentStats() {

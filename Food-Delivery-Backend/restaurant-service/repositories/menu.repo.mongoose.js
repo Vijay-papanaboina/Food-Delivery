@@ -50,11 +50,13 @@ export async function getMenuItems(restaurantId, filters = {}) {
   // The original repo returned snake_case keys because of Drizzle mapping.
   // We should return camelCase as Mongoose does, but we might need to adapt the controller.
   // For now, we return standard Mongoose objects (camelCase).
-  return await dbQuery.lean();
+  const items = await dbQuery;
+  return items.map(item => item.toObject());
 }
 
 export async function getMenuItemById(itemId) {
-  return await MenuItem.findById(itemId).lean();
+  const item = await MenuItem.findById(itemId);
+  return item ? item.toObject() : null;
 }
 
 export async function deleteMenuItemRow(restaurantId, itemId) {
@@ -69,8 +71,9 @@ export async function setMenuItemAvailability(restaurantId, itemId, isAvailable)
 }
 
 export async function getMenuItemsByIds(restaurantId, itemIds) {
-  return await MenuItem.find({
+  const items = await MenuItem.find({
     restaurantId,
     _id: { $in: itemIds }
-  }).lean();
+  });
+  return items.map(item => item.toObject());
 }

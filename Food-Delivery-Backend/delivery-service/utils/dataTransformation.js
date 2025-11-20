@@ -7,8 +7,8 @@ export const transformDelivery = (delivery) => {
   if (!delivery) return null;
 
   return {
-    id: delivery._id.toString(),
-    deliveryId: delivery._id.toString(), // Keep for backward compatibility if needed
+    id: delivery.id,
+    deliveryId: delivery.id, // Keep for backward compatibility if needed
     orderId: delivery.orderId?.toString(),
     driverId: delivery.driverId?.toString(),
     restaurantId: delivery.restaurantId?.toString(),
@@ -59,7 +59,7 @@ export const transformDriver = (driver) => {
   if (!driver) return null;
 
   return {
-    id: driver._id.toString(),
+    id: driver.id,
     name: driver.name,
     phone: driver.phone,
     vehicle: driver.vehicle,

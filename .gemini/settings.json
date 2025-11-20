@@ -1,0 +1,10 @@
+{
+  "context": {
+    "fileFiltering": {
+      "respectGitIgnore": false
+    }
+  },
+  "general": {
+    "enablePromptCompletion": true
+  }
+}

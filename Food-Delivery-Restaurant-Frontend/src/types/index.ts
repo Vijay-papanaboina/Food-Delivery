@@ -1,19 +1,25 @@
 export interface KitchenOrder {
-  order_id: string;
-  restaurant_id: string;
-  user_id: string;
+  orderId: string;
+  restaurantId: string;
+  userId: string;
   items: OrderItem[];
   total: number;
   status: "received" | "preparing" | "ready" | "completed" | "cancelled";
-  received_at: string;
-  started_at?: string;
-  estimated_ready_time?: string;
-  ready_at?: string;
-  preparation_time?: number;
+  receivedAt: string;
+  startedAt?: string;
+  estimatedReadyTime?: string;
+  readyAt?: string;
+  preparationTime?: number;
+  deliveryAddress?: {
+    street: string;
+    city: string;
+    state: string;
+    zipCode: string;
+  };
 }
 
 export interface OrderItem {
-  menu_item_id: string;
+  menuItemId: string;
   name: string;
   quantity: number;
   price: number;
@@ -21,21 +27,21 @@ export interface OrderItem {
 }
 
 export interface OrderHistory {
-  order_id: string;
-  restaurant_id: string;
-  user_id: string;
-  delivery_address_json: {
+  orderId: string;
+  restaurantId: string;
+  userId: string;
+  deliveryAddress: {
     street: string;
     city: string;
     state: string;
     zipCode: string;
   };
   status: string;
-  payment_status: string;
+  paymentStatus: string;
   total: number;
-  created_at: string;
-  confirmed_at?: string;
-  delivered_at?: string;
+  createdAt: string;
+  confirmedAt?: string;
+  deliveredAt?: string;
   items: OrderItem[];
 }
 
@@ -59,20 +65,20 @@ export interface MenuItem {
 }
 
 export interface Restaurant {
-  restaurant_id: string;
-  owner_id: string;
+  restaurantId: string;
+  ownerId: string;
   name: string;
   cuisine: string;
   address: string;
   phone: string;
   rating: string;
-  delivery_time: string;
-  delivery_fee: string;
-  is_open: boolean;
-  opening_time?: string;
-  closing_time?: string;
-  is_active: boolean;
-  created_at: string;
+  deliveryTime: string;
+  deliveryFee: string;
+  isOpen: boolean;
+  openingTime?: string;
+  closingTime?: string;
+  isActive: boolean;
+  createdAt: string;
 }
 
 export interface OrderFilters {

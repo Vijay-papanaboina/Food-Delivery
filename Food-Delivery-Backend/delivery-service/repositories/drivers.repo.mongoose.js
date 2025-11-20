@@ -32,15 +32,15 @@ export async function updateDriverAvailability(driverId, isAvailable) {
 }
 
 export async function getDriverAvailability(driverId) {
-  const driver = await Driver.findById(driverId).select("isAvailable").lean();
-  return driver ? { id: driver._id, is_available: driver.isAvailable } : null;
+  const driver = await Driver.findById(driverId).select("isAvailable");
+  return driver ? driver.toObject() : null;
 }
 
 export async function getDriver(driverId) {
-  const driver = await Driver.findById(driverId).lean();
+  const driver = await Driver.findById(driverId);
   if (!driver) return null;
 
-  return driver;
+  return driver.toObject();
 }
 
 export async function getDriverByUserId(userId) {
@@ -59,6 +59,6 @@ export async function getDrivers(filters = {}) {
     q = q.limit(Number(filters.limit));
   }
 
-  const drivers = await q.lean();
-  return drivers;
+  const drivers = await q;
+  return drivers.map(driver => driver.toObject());
 }

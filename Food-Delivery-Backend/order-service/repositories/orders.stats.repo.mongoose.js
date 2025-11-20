@@ -5,10 +5,9 @@ export async function getUserOrders(userId, limit = 10) {
   try {
     const orders = await Order.find({ userId })
       .sort({ createdAt: -1 })
-      .limit(Number(limit))
-      .lean();
+      .limit(Number(limit));
 
-    return orders.map(transformOrder);
+    return orders.map(order => order.toObject());
   } catch (error) {
     logger.error("Failed to get user orders", { userId, error: error.message });
     throw error;
@@ -19,10 +18,9 @@ export async function getRestaurantOrders(restaurantId, limit = 10) {
   try {
     const orders = await Order.find({ restaurantId })
       .sort({ createdAt: -1 })
-      .limit(Number(limit))
-      .lean();
+      .limit(Number(limit));
 
-    return orders.map(transformOrder);
+    return orders.map(order => order.toObject());
   } catch (error) {
     logger.error("Failed to get restaurant orders", {
       restaurantId,
@@ -104,16 +102,4 @@ export async function getRestaurantOrderStats(restaurantId) {
   }
 }
 
-// Helper to transform Mongoose document to expected format
-function transformOrder(order) {
-  return {
-    ...order,
-    id: order._id.toString(),
-    orderId: order._id.toString(),
-    items: order.items.map((item) => ({
-      itemId: item.itemId,
-      quantity: item.quantity,
-      price: item.price,
-    })),
-  };
-}
+

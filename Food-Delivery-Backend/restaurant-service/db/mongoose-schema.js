@@ -55,10 +55,27 @@ const restaurantSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-    toJSON: { virtuals: true },
-    toObject: { virtuals: true },
+    toJSON: {
+      virtuals: true,
+      versionKey: false,
+      transform: function (doc, ret) {
+        delete ret._id;
+      }
+    },
+    toObject: {
+      virtuals: true,
+      versionKey: false,
+      transform: function (doc, ret) {
+        delete ret._id;
+      }
+    }
   },
 );
+
+// Virtual property for restaurant ID
+restaurantSchema.virtual('id').get(function() {
+  return this._id;
+});
 
 const menuItemSchema = new mongoose.Schema(
   {
@@ -99,8 +116,27 @@ const menuItemSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
+    toJSON: {
+      virtuals: true,
+      versionKey: false,
+      transform: function (doc, ret) {
+        delete ret._id;
+      }
+    },
+    toObject: {
+      virtuals: true,
+      versionKey: false,
+      transform: function (doc, ret) {
+        delete ret._id;
+      }
+    }
   },
 );
+
+// Virtual property for menuItem ID
+menuItemSchema.virtual('id').get(function() {
+  return this._id;
+});
 
 const kitchenOrderSchema = new mongoose.Schema(
   {
@@ -160,8 +196,27 @@ const kitchenOrderSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
+    toJSON: {
+      virtuals: true,
+      versionKey: false,
+      transform: function (doc, ret) {
+        delete ret._id;
+      }
+    },
+    toObject: {
+      virtuals: true,
+      versionKey: false,
+      transform: function (doc, ret) {
+        delete ret._id;
+      }
+    }
   },
 );
+
+// Virtual property for kitchenOrder ID
+kitchenOrderSchema.virtual('id').get(function() {
+  return this._id;
+});
 
 export const Restaurant = mongoose.model("Restaurant", restaurantSchema);
 export const MenuItem = mongoose.model("MenuItem", menuItemSchema);

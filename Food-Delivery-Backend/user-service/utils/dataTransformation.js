@@ -10,7 +10,7 @@ export const transformUser = (user) => {
   const userData = user.toObject ? user.toObject() : user;
 
   return {
-    id: userData._id.toString(),
+    id: userData.id,
     name: userData.name,
     email: userData.email,
     phone: userData.phone,
@@ -31,7 +31,7 @@ export const transformAddress = (address) => {
   if (!address) return null;
 
   return {
-    id: address._id.toString(),
+    id: address.id,
     label: address.label,
     street: address.street,
     city: address.city,

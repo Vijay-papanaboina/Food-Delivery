@@ -1,30 +1,30 @@
 // API Response types for backend data transformation
 export interface BackendRestaurant {
-  restaurant_id: string;
+  restaurantId: string;
   name: string;
   cuisine: string;
   address: string;
   phone: string;
   rating: string;
-  delivery_time: string;
-  delivery_fee: string;
-  is_active: boolean;
-  is_open: boolean;
-  image_url?: string;
-  created_at: string;
+  deliveryTime: string;
+  deliveryFee: string;
+  isActive: boolean;
+  isOpen: boolean;
+  imageUrl?: string;
+  createdAt: string;
 }
 
 export interface BackendMenuItem {
-  item_id: string;
-  restaurant_id: string;
+  itemId: string;
+  restaurantId: string;
   name: string;
   description: string;
   price: string;
   category: string;
-  is_available: boolean;
-  preparation_time?: number;
-  image_url?: string;
-  created_at: string;
+  isAvailable: boolean;
+  preparationTime?: number;
+  imageUrl?: string;
+  createdAt: string;
 }
 
 export interface BackendUser {
@@ -32,9 +32,9 @@ export interface BackendUser {
   name: string;
   email: string;
   phone?: string;
-  is_active: boolean;
-  created_at: string;
-  updated_at: string;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface BackendAddress {
@@ -52,52 +52,52 @@ export interface BackendAddress {
 
 export interface BackendOrder {
   id: string;
-  restaurant_id: string;
-  user_id: string;
+  restaurantId: string;
+  userId: string;
   items: Array<{
     id: string;
     quantity: number;
     price: number;
   }>;
-  delivery_address: {
+  deliveryAddress: {
     street: string;
     city: string;
     state: string;
     zipCode: string;
   };
   status: string;
-  payment_status: string;
+  paymentStatus: string;
   total: number;
-  created_at: string;
-  updated_at: string;
-  confirmed_at?: string;
-  delivered_at?: string;
+  createdAt: string;
+  updatedAt: string;
+  confirmedAt?: string;
+  deliveredAt?: string;
 }
 
 export interface BackendPayment {
-  payment_id: string;
-  order_id: string;
+  paymentId: string;
+  orderId: string;
   amount: string;
   method: string;
-  user_id: string;
+  userId: string;
   status: string;
-  transaction_id?: string;
-  failure_reason?: string;
-  created_at: string;
-  processed_at?: string;
+  transactionId?: string;
+  failureReason?: string;
+  createdAt: string;
+  processedAt?: string;
 }
 
 export interface BackendDelivery {
-  delivery_id: string;
-  order_id: string;
-  driver_id: string;
-  driver_name: string;
-  driver_phone: string;
+  deliveryId: string;
+  orderId: string;
+  driverId: string;
+  driverName: string;
+  driverPhone: string;
   vehicle: string;
-  license_plate: string;
+  licensePlate: string;
   status: string;
-  assigned_at?: string;
-  estimated_delivery_time?: string;
-  actual_delivery_time?: string;
-  created_at: string;
+  assignedAt?: string;
+  estimatedDeliveryTime?: string;
+  actualDeliveryTime?: string;
+  createdAt: string;
 }

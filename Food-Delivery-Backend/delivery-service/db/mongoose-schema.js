@@ -56,8 +56,27 @@ const deliverySchema = new mongoose.Schema(
   },
   {
     timestamps: true, // Creates createdAt and updatedAt
+    toJSON: {
+      virtuals: true,
+      versionKey: false,
+      transform: function (doc, ret) {
+        delete ret._id;
+      }
+    },
+    toObject: {
+      virtuals: true,
+      versionKey: false,
+      transform: function (doc, ret) {
+        delete ret._id;
+      }
+    }
   }
 );
+
+// Virtual property for delivery ID
+deliverySchema.virtual('id').get(function() {
+  return this._id;
+});
 
 // Index for efficient querying
 deliverySchema.index({ driverId: 1 });
@@ -82,28 +101,26 @@ const driverSchema = new mongoose.Schema(
   {
     timestamps: true,
     _id: false, // Disable auto-generation of _id since we use String _id
+    toJSON: {
+      virtuals: true,
+      versionKey: false,
+      transform: function (doc, ret) {
+        delete ret._id;
+      }
+    },
+    toObject: {
+      virtuals: true,
+      versionKey: false,
+      transform: function (doc, ret) {
+        delete ret._id;
+      }
+    }
   }
 );
 
 // Ensure _id is used as the primary key
 driverSchema.virtual('id').get(function() {
   return this._id;
-});
-
-driverSchema.set('toJSON', {
-  virtuals: true,
-  versionKey: false,
-  transform: function (doc, ret) {
-    delete ret._id;
-  }
-});
-
-driverSchema.set('toObject', {
-  virtuals: true,
-  versionKey: false,
-  transform: function (doc, ret) {
-    delete ret._id;
-  }
 });
 
 export const Delivery = mongoose.model("Delivery", deliverySchema);

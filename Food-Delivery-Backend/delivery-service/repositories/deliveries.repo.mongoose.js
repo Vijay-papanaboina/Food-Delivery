@@ -37,10 +37,7 @@ export async function createDelivery(deliveryData) {
   });
 
   const savedDelivery = await delivery.save();
-  return {
-    ...savedDelivery.toObject(),
-    deliveryId: savedDelivery._id.toString(),
-  };
+  return savedDelivery.toObject();
 }
 
 export async function upsertDelivery(d) {
@@ -87,12 +84,9 @@ export async function upsertDelivery(d) {
     new: true,
     upsert: true,
     setDefaultsOnInsert: true,
-  }).lean();
+  });
 
-  return {
-    ...result,
-    deliveryId: result._id.toString(),
-  };
+  return result.toObject();
 }
 
 export async function updateDeliveryFields(deliveryId, fields) {
@@ -119,21 +113,15 @@ export async function updateDeliveryFields(deliveryId, fields) {
 }
 
 export async function getDelivery(deliveryId) {
-  const delivery = await Delivery.findById(deliveryId).lean();
+  const delivery = await Delivery.findById(deliveryId);
   if (!delivery) return null;
-  return {
-    ...delivery,
-    deliveryId: delivery._id.toString(),
-  };
+  return delivery.toObject();
 }
 
 export async function getDeliveryByOrderId(orderId) {
-  const delivery = await Delivery.findOne({ orderId }).lean();
+  const delivery = await Delivery.findOne({ orderId });
   if (!delivery) return null;
-  return {
-    ...delivery,
-    deliveryId: delivery._id.toString(),
-  };
+  return delivery.toObject();
 }
 
 export async function getDeliveries(filters = {}) {
@@ -146,11 +134,8 @@ export async function getDeliveries(filters = {}) {
     q = q.limit(Number(filters.limit));
   }
 
-  const deliveries = await q.lean();
-  return deliveries.map((d) => ({
-    ...d,
-    deliveryId: d._id.toString(),
-  }));
+  const deliveries = await q;
+  return deliveries.map((d) => d.toObject());
 }
 
 export async function getDeliveryStats() {
@@ -241,8 +226,8 @@ export async function acceptDelivery(deliveryId, driverId) {
     { _id: deliveryId, driverId },
     { acceptanceStatus: "accepted" },
     { new: true }
-  ).lean();
-  return result ? { ...result, deliveryId: result._id.toString() } : null;
+  );
+  return result ? result.toObject() : null;
 }
 
 export async function declineDelivery(deliveryId, driverId) {
@@ -253,8 +238,8 @@ export async function declineDelivery(deliveryId, driverId) {
       $push: { declinedByDrivers: driverId },
     },
     { new: true }
-  ).lean();
-  return result ? { ...result, deliveryId: result._id.toString() } : null;
+  );
+  return result ? result.toObject() : null;
 }
 
 export async function getDeliveryWithFullDetails(deliveryId) {
@@ -268,8 +253,8 @@ export async function findAvailableDriverForReassignment(
   if (excludeDriverIds.length > 0) {
     query._id = { $nin: excludeDriverIds };
   }
-  const driver = await Driver.findOne(query).lean();
-  return driver;
+  const driver = await Driver.findOne(query);
+  return driver ? driver.toObject() : null;
 }
 
 export async function enrichDeliveryWithOrderDetails(deliveryId, orderData) {
@@ -287,6 +272,6 @@ export async function enrichDeliveryWithOrderDetails(deliveryId, orderData) {
 
   const result = await Delivery.findByIdAndUpdate(deliveryId, update, {
     new: true,
-  }).lean();
-  return result ? { ...result, deliveryId: result._id.toString() } : null;
+  });
+  return result ? result.toObject() : null;
 }

@@ -1,32 +1,32 @@
 export function transformKitchenOrder(order) {
   return {
-    id: order._id?.toString(),
+    id: order.id,
 
-    // frontend expects: order_id
-    order_id: order.orderId?.toString(),
+    // frontend expects: orderId
+    orderId: order.orderId?.toString(),
 
-    restaurant_id: order.restaurantId?.toString(),
-    user_id: order.userId?.toString(),
+    restaurantId: order.restaurantId?.toString(),
+    userId: order.userId?.toString(),
 
     // keep arrays and objects unchanged
     items: order.items || [],
 
-    delivery_address: order.deliveryAddress,
-    customer_name: order.customerName,
-    customer_phone: order.customerPhone,
+    deliveryAddress: order.deliveryAddress,
+    customerName: order.customerName,
+    customerPhone: order.customerPhone,
 
     total: order.total,
     status: order.status,
 
-    // timestamps transformed to snake_case
-    received_at: order.receivedAt,
-    started_at: order.startedAt,
-    estimated_ready_time: order.estimatedReadyTime,
-    ready_at: order.readyAt,
-    preparation_time: order.preparationTime,
+    // timestamps transformed to camelCase
+    receivedAt: order.receivedAt,
+    startedAt: order.startedAt,
+    estimatedReadyTime: order.estimatedReadyTime,
+    readyAt: order.readyAt,
+    preparationTime: order.preparationTime,
 
-    created_at: order.createdAt,
-    updated_at: order.updatedAt,
+    createdAt: order.createdAt,
+    updatedAt: order.updatedAt,
   };
 }
 
@@ -35,7 +35,7 @@ export function transformRestaurant(restaurant) {
   const r = restaurant.toObject ? restaurant.toObject() : restaurant;
   return {
     ...r,
-    id: r._id?.toString(),
+    id: r.id,
     ownerId: r.ownerId?.toString(),
   };
 }
@@ -45,7 +45,7 @@ export function transformMenuItem(item) {
   const i = item.toObject ? item.toObject() : item;
   return {
     ...i,
-    itemId: i._id?.toString(), // Frontend expects itemId
+    itemId: i.id, // Frontend expects itemId
     restaurantId: i.restaurantId?.toString(),
   };
 }

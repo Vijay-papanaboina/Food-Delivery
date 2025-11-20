@@ -2,7 +2,6 @@ import { config } from "@/config/env";
 import { useAuthStore } from "@/store/authStore";
 import { logger } from "@/lib/logger";
 import type { User } from "@/types";
-import type { BackendUser } from "@/types/api";
 import { ApiService } from "./baseApi";
 
 // Auth API
@@ -23,24 +22,13 @@ export class AuthApi extends ApiService {
   }> => {
     const result = await this.post<{
       message: string;
-      user: BackendUser;
+      user: User;
       accessToken: string;
     }>("/api/user-service/auth/signup", userData);
 
-    // Transform BackendUser to User
-    const user: User = {
-      id: result.user.id,
-      name: result.user.name,
-      email: result.user.email,
-      phone: result.user.phone,
-      isActive: result.user.is_active,
-      createdAt: result.user.created_at,
-      updatedAt: result.user.updated_at,
-    };
-
     return {
       message: result.message,
-      user,
+      user: result.user,
       accessToken: result.accessToken,
     };
   };
@@ -55,24 +43,13 @@ export class AuthApi extends ApiService {
   }> => {
     const result = await this.post<{
       message: string;
-      user: BackendUser;
+      user: User;
       accessToken: string;
     }>("/api/user-service/auth/login/customer", credentials);
 
-    // Transform BackendUser to User
-    const user: User = {
-      id: result.user.id,
-      name: result.user.name,
-      email: result.user.email,
-      phone: result.user.phone,
-      isActive: result.user.is_active,
-      createdAt: result.user.created_at,
-      updatedAt: result.user.updated_at,
-    };
-
     return {
       message: result.message,
-      user,
+      user: result.user,
       accessToken: result.accessToken,
     };
   };
@@ -80,7 +57,7 @@ export class AuthApi extends ApiService {
   refreshToken = async (): Promise<{
     message: string;
     accessToken: string;
-    user: BackendUser;
+    user: User;
   }> => {
     return this.request({
       method: "POST",
@@ -89,7 +66,7 @@ export class AuthApi extends ApiService {
     });
   };
 
-  validateToken = async (): Promise<{ message: string; user: BackendUser }> => {
+  validateToken = async (): Promise<{ message: string; user: User }> => {
     return this.request({
       method: "POST",
       url: "/api/user-service/auth/validate",
@@ -99,24 +76,13 @@ export class AuthApi extends ApiService {
 
   private handleRefreshResponse = (refreshResponse: {
     accessToken: string;
-    user: BackendUser;
+    user: User;
   }): { isAuthenticated: boolean; user: User } => {
-    // Transform BackendUser to User
-    const user: User = {
-      id: refreshResponse.user.id,
-      name: refreshResponse.user.name,
-      email: refreshResponse.user.email,
-      phone: refreshResponse.user.phone,
-      isActive: refreshResponse.user.is_active,
-      createdAt: refreshResponse.user.created_at,
-      updatedAt: refreshResponse.user.updated_at,
-    };
-
     // Store new token in localStorage and update Zustand
     localStorage.setItem("access_token", refreshResponse.accessToken);
-    useAuthStore.getState().login(user, refreshResponse.accessToken);
+    useAuthStore.getState().login(refreshResponse.user, refreshResponse.accessToken);
 
-    return { isAuthenticated: true, user };
+    return { isAuthenticated: true, user: refreshResponse.user };
   };
 
   checkAuth = async (): Promise<{ isAuthenticated: boolean; user?: User }> => {
@@ -129,20 +95,9 @@ export class AuthApi extends ApiService {
         try {
           const validateResponse = await this.validateToken();
 
-          // Transform BackendUser to User
-          const user: User = {
-            id: validateResponse.user.id,
-            name: validateResponse.user.name,
-            email: validateResponse.user.email,
-            phone: validateResponse.user.phone,
-            isActive: validateResponse.user.is_active,
-            createdAt: validateResponse.user.created_at,
-            updatedAt: validateResponse.user.updated_at,
-          };
-
           // Update user in Zustand store
-          useAuthStore.getState().login(user, storedToken);
-          return { isAuthenticated: true, user };
+          useAuthStore.getState().login(validateResponse.user, storedToken);
+          return { isAuthenticated: true, user: validateResponse.user };
         } catch (validateError) {
           // Step 3: Token validation failed, try to refresh
           logger.warn(`[AuthAPI] Token validation failed, attempting refresh`, {

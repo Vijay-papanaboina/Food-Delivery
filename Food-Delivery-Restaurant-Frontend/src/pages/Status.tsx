@@ -50,10 +50,10 @@ export const Status = () => {
             </div>
             {!isLoadingRestaurant && (
               <Badge
-                variant={restaurant?.is_open ? "default" : "secondary"}
+                variant={restaurant?.isOpen ? "default" : "secondary"}
                 className="text-base px-4 py-1"
               >
-                {restaurant?.is_open ? "Open" : "Closed"}
+                {restaurant?.isOpen ? "Open" : "Closed"}
               </Badge>
             )}
           </div>
@@ -65,14 +65,14 @@ export const Status = () => {
             <div className="flex items-center justify-between p-4 bg-muted/50 rounded-lg">
               <div>
                 <p className="font-semibold text-lg">
-                  {restaurant?.is_open ? "Currently Open" : "Currently Closed"}
+                  {restaurant?.isOpen ? "Currently Open" : "Currently Closed"}
                 </p>
                 <p className="text-sm text-muted-foreground">
                   Toggle to change restaurant availability
                 </p>
               </div>
               <Switch
-                checked={restaurant?.is_open || false}
+                checked={restaurant?.isOpen || false}
                 onCheckedChange={handleStatusToggle}
                 disabled={updateStatus.isPending}
                 className="scale-125"

@@ -2,7 +2,7 @@ import { User } from "../db/mongoose-schema.js";
 
 // Get all cart items for a user
 export const getCartItemsByUserId = async (userId) => {
-  const user = await User.findById(userId).select("cart").lean();
+  const user = await User.findById(userId).select("cart");
   if (!user) return [];
   
   return user.cart;

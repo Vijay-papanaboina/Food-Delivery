@@ -45,7 +45,7 @@ export const getDeliveryByOrder = async (req, res) => {
     // But we ensure consistent naming for the API response
     const transformedDelivery = {
       id: delivery._id,
-      deliveryd: delivery.deliveryId,
+      deliveryId: delivery.deliveryId,
       orderId: delivery.orderId,
       driverId: delivery.driverId,
       driverName: delivery.driverName,

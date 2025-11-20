@@ -36,6 +36,25 @@ const orderSchema = new mongoose.Schema({
     deliveredAt: { type: Date },
 }, {
     timestamps: true,
+    toJSON: {
+      virtuals: true,
+      versionKey: false,
+      transform: function (doc, ret) {
+        delete ret._id;
+      }
+    },
+    toObject: {
+      virtuals: true,
+      versionKey: false,
+      transform: function (doc, ret) {
+        delete ret._id;
+      }
+    }
+});
+
+// Virtual property for order ID
+orderSchema.virtual('id').get(function() {
+  return this._id;
 });
 
 export const Order = mongoose.model("Order", orderSchema);

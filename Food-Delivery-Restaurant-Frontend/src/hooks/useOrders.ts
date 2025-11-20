@@ -17,7 +17,7 @@ export const useOrderHistory = (filters?: OrderFilters) => {
     queryKey: ["my-restaurant"],
     queryFn: () => restaurantApi.getMyRestaurant(),
   });
-  const restaurantId = restaurantData?.restaurant?.restaurant_id;
+  const restaurantId = restaurantData?.restaurant?.restaurantId;
 
   return useQuery({
     queryKey: ["order-history", restaurantId, filters],
@@ -46,7 +46,7 @@ export const useOrderStats = () => {
     queryKey: ["my-restaurant"],
     queryFn: () => restaurantApi.getMyRestaurant(),
   });
-  const restaurantId = restaurantData?.restaurant?.restaurant_id;
+  const restaurantId = restaurantData?.restaurant?.restaurantId;
 
   return useQuery({
     queryKey: ["order-stats", restaurantId],

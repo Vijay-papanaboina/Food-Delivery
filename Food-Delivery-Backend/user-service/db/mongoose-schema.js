@@ -1,12 +1,35 @@
 import mongoose from "mongoose";
 
-const addressSchema = new mongoose.Schema({
-  label: { type: String, required: true },
-  street: { type: String, required: true },
-  city: { type: String, required: true },
-  state: { type: String, required: true },
-  zipCode: { type: String, required: true },
-  isDefault: { type: Boolean, default: false },
+const addressSchema = new mongoose.Schema(
+  {
+    label: { type: String, required: true },
+    street: { type: String, required: true },
+    city: { type: String, required: true },
+    state: { type: String, required: true },
+    zipCode: { type: String, required: true },
+    isDefault: { type: Boolean, default: false },
+  },
+  {
+    toJSON: {
+      virtuals: true,
+      versionKey: false,
+      transform: function (doc, ret) {
+        delete ret._id;
+      }
+    },
+    toObject: {
+      virtuals: true,
+      versionKey: false,
+      transform: function (doc, ret) {
+        delete ret._id;
+      }
+    }
+  }
+);
+
+// Virtual property for address ID
+addressSchema.virtual('id').get(function() {
+  return this._id;
 });
 
 const cartItemSchema = new mongoose.Schema(
@@ -16,8 +39,27 @@ const cartItemSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
+    toJSON: {
+      virtuals: true,
+      versionKey: false,
+      transform: function (doc, ret) {
+        delete ret._id;
+      }
+    },
+    toObject: {
+      virtuals: true,
+      versionKey: false,
+      transform: function (doc, ret) {
+        delete ret._id;
+      }
+    }
   },
 );
+
+// Virtual property for cartItem ID
+cartItemSchema.virtual('id').get(function() {
+  return this._id;
+});
 
 const userSchema = new mongoose.Schema(
   {
@@ -37,8 +79,27 @@ const userSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
+    toJSON: {
+      virtuals: true,
+      versionKey: false,
+      transform: function (doc, ret) {
+        delete ret._id;
+      }
+    },
+    toObject: {
+      virtuals: true,
+      versionKey: false,
+      transform: function (doc, ret) {
+        delete ret._id;
+      }
+    }
   },
 );
+
+// Virtual property for user ID
+userSchema.virtual('id').get(function() {
+  return this._id;
+});
 
 
 // Export only the User model (Address and CartItem are embedded subdocuments)

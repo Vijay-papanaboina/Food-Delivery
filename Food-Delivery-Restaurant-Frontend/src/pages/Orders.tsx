@@ -96,16 +96,16 @@ export const Orders = () => {
           ) : (
             <div className="grid gap-4 md:grid-cols-2">
               {activeOrders.map((order) => (
-                <Card key={order.order_id} className="overflow-hidden">
+                <Card key={order.orderId} className="overflow-hidden">
                   <CardHeader className="pb-3">
                     <div className="flex items-center justify-between">
                       <CardTitle className="text-lg">
-                        Order #{order.order_id.slice(0, 8)}
+                        Order #{order.orderId.slice(0, 8)}
                       </CardTitle>
                       {getStatusBadge(order.status)}
                     </div>
                     <p className="text-sm text-muted-foreground">
-                      {new Date(order.received_at).toLocaleString()}
+                      {new Date(order.receivedAt).toLocaleString()}
                     </p>
                   </CardHeader>
                   <CardContent>
@@ -137,10 +137,10 @@ export const Orders = () => {
                       </div>
 
                       {/* Preparation Time */}
-                      {order.preparation_time && (
+                      {order.preparationTime && (
                         <div className="flex items-center gap-2 text-sm text-muted-foreground">
                           <Clock className="h-4 w-4" />
-                          <span>Prep time: {order.preparation_time} min</span>
+                          <span>Prep time: {order.preparationTime} min</span>
                         </div>
                       )}
 
@@ -149,7 +149,7 @@ export const Orders = () => {
                         order.status !== "completed" &&
                         order.status !== "cancelled" && (
                           <Button
-                            onClick={() => handleMarkReady(order.order_id)}
+                            onClick={() => handleMarkReady(order.orderId)}
                             disabled={markReadyMutation.isPending}
                             className="w-full mt-2"
                           >
@@ -187,13 +187,13 @@ export const Orders = () => {
             <div className="space-y-3">
               {/* Show completed orders from kitchen first */}
               {completedOrders.map((order) => (
-                <Card key={`kitchen-${order.order_id}`}>
+                <Card key={`kitchen-${order.orderId}`}>
                   <CardContent className="p-4">
                     <div className="flex items-center justify-between">
                       <div className="flex-1">
                         <div className="flex items-center gap-3 mb-2">
                           <p className="font-semibold">
-                            #{order.order_id.slice(0, 8)}
+                            #{order.orderId.slice(0, 8)}
                           </p>
                           <Badge variant="outline">{order.status}</Badge>
                         </div>
@@ -203,7 +203,7 @@ export const Orders = () => {
                           <p>
                             Completed:{" "}
                             {new Date(
-                              order.ready_at || order.received_at
+                              order.readyAt || order.receivedAt
                             ).toLocaleString()}
                           </p>
                         </div>
@@ -214,21 +214,21 @@ export const Orders = () => {
               ))}
               {/* Then show order history from order service */}
               {orderHistory.map((order) => (
-                <Card key={order.order_id}>
+                <Card key={order.orderId}>
                   <CardContent className="p-4">
                     <div className="flex items-center justify-between">
                       <div className="flex-1">
                         <div className="flex items-center gap-3 mb-2">
                           <p className="font-semibold">
-                            #{order.order_id.slice(0, 8)}
+                            #{order.orderId.slice(0, 8)}
                           </p>
                           <Badge variant="outline">{order.status}</Badge>
                           <Badge variant="secondary">
-                            {order.payment_status}
+                            {order.paymentStatus}
                           </Badge>
                         </div>
                         <p className="text-sm text-muted-foreground">
-                          {new Date(order.created_at).toLocaleString()}
+                          {new Date(order.createdAt).toLocaleString()}
                         </p>
                         <p className="text-sm text-muted-foreground">
                           {order.items.length} items

@@ -7,8 +7,8 @@ export const transformOrder = (order) => {
   if (!order) return null;
 
   return {
-    id: order._id.toString(),
-    orderId: order._id.toString(), // Keep for backward compatibility
+    id: order.id,
+    orderId: order.id, // Keep for backward compatibility
     restaurantId: order.restaurantId,
     userId: order.userId,
     items: order.items ? order.items.map(transformOrderItem) : [],

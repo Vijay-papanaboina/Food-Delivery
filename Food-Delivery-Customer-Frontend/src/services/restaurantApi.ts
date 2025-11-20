@@ -1,6 +1,5 @@
 import { config } from "@/config/env";
 import type { Restaurant, MenuItem, RestaurantFilters } from "@/types";
-import type { BackendRestaurant } from "@/types/api";
 import { ApiService } from "./baseApi";
 
 // Restaurant API
@@ -33,30 +32,12 @@ export class RestaurantApi extends ApiService {
 
     const result = await this.get<{
       message: string;
-      restaurants: BackendRestaurant[];
+      restaurants: Restaurant[];
     }>(url);
-
-    // Transform the API response to match our frontend types
-    const restaurants: Restaurant[] = result.restaurants.map(
-      (restaurant: BackendRestaurant) => ({
-        restaurantId: restaurant.restaurant_id,
-        name: restaurant.name,
-        cuisine: restaurant.cuisine,
-        address: restaurant.address,
-        phone: restaurant.phone,
-        rating: parseFloat(restaurant.rating),
-        deliveryTime: restaurant.delivery_time,
-        deliveryFee: parseFloat(restaurant.delivery_fee),
-        isActive: restaurant.is_active,
-        isOpen: restaurant.is_open,
-        imageUrl: restaurant.image_url,
-        createdAt: restaurant.created_at,
-      })
-    );
 
     return {
       message: result.message,
-      restaurants,
+      restaurants: result.restaurants,
     };
   };
 
@@ -68,28 +49,12 @@ export class RestaurantApi extends ApiService {
   }> => {
     const result = await this.get<{
       message: string;
-      restaurant: BackendRestaurant;
+      restaurant: Restaurant;
     }>(`/api/restaurant-service/restaurants/${restaurantId}`);
-
-    // Transform BackendRestaurant to Restaurant
-    const restaurant: Restaurant = {
-      restaurantId: result.restaurant.restaurant_id,
-      name: result.restaurant.name,
-      cuisine: result.restaurant.cuisine,
-      address: result.restaurant.address,
-      phone: result.restaurant.phone,
-      rating: parseFloat(result.restaurant.rating),
-      deliveryTime: result.restaurant.delivery_time,
-      deliveryFee: parseFloat(result.restaurant.delivery_fee),
-      isActive: result.restaurant.is_active,
-      isOpen: result.restaurant.is_open,
-      imageUrl: result.restaurant.image_url,
-      createdAt: result.restaurant.created_at,
-    };
 
     return {
       message: result.message,
-      restaurant,
+      restaurant: result.restaurant,
     };
   };
 

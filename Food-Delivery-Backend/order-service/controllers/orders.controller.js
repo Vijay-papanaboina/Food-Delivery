@@ -172,7 +172,7 @@ export const buildCreateOrderController =
       }
       const restaurantData = await restaurantResp.json();
       const deliveryFee =
-        parseFloat(restaurantData.restaurant.delivery_fee) || 0;
+        parseFloat(restaurantData.restaurant.deliveryFee) || 0;
 
       const total = subtotal + deliveryFee;
 

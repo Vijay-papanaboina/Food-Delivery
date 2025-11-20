@@ -40,7 +40,8 @@ export async function updateKitchenOrderStatus(
 }
 
 export async function getKitchenOrder(orderId) {
-  return await KitchenOrder.findOne({ orderId }).lean();
+  const order = await KitchenOrder.findOne({ orderId });
+  return order ? order.toObject() : null;
 }
 
 export async function getKitchenOrders(filters = {}) {
@@ -59,5 +60,6 @@ export async function getKitchenOrders(filters = {}) {
     dbQuery = dbQuery.limit(Number(filters.limit));
   }
 
-  return await dbQuery.lean();
+  const orders = await dbQuery;
+  return orders.map(order => order.toObject());
 }

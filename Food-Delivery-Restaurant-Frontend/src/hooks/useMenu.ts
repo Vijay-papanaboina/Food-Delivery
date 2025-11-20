@@ -11,7 +11,7 @@ export const useMyRestaurant = () => {
 
 export const useMenuItems = () => {
   const { data: restaurantData } = useMyRestaurant();
-  const restaurantId = restaurantData?.restaurant?.restaurant_id;
+  const restaurantId = restaurantData?.restaurant?.restaurantId;
 
   return useQuery({
     queryKey: ["menu-items", restaurantId],
@@ -22,7 +22,7 @@ export const useMenuItems = () => {
 
 export const useToggleAvailability = () => {
   const { data: restaurantData } = useMyRestaurant();
-  const restaurantId = restaurantData?.restaurant?.restaurant_id;
+  const restaurantId = restaurantData?.restaurant?.restaurantId;
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -54,7 +54,7 @@ export const useToggleAvailability = () => {
 
 export const useAddMenuItem = () => {
   const { data: restaurantData } = useMyRestaurant();
-  const restaurantId = restaurantData?.restaurant?.restaurant_id;
+  const restaurantId = restaurantData?.restaurant?.restaurantId;
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -72,7 +72,7 @@ export const useAddMenuItem = () => {
 
 export const useUpdateMenuItem = () => {
   const { data: restaurantData } = useMyRestaurant();
-  const restaurantId = restaurantData?.restaurant?.restaurant_id;
+  const restaurantId = restaurantData?.restaurant?.restaurantId;
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -95,7 +95,7 @@ export const useUpdateMenuItem = () => {
 
 export const useDeleteMenuItem = () => {
   const { data: restaurantData } = useMyRestaurant();
-  const restaurantId = restaurantData?.restaurant?.restaurant_id;
+  const restaurantId = restaurantData?.restaurant?.restaurantId;
   const queryClient = useQueryClient();
 
   return useMutation({

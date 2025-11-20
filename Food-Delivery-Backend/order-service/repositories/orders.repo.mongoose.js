@@ -30,13 +30,13 @@ export async function upsertOrder(o) {
         },
       },
       { upsert: true, new: true, setDefaultsOnInsert: true }
-    ).lean();
+    );
 
     logger.info("Order upserted successfully", {
       orderId: result._id,
     });
 
-    return result;
+    return result.toObject();
   } catch (error) {
     logger.error("Failed to upsert order", {
       orderId: o.id,
@@ -67,7 +67,7 @@ export async function updateOrderStatus(
       orderId,
       { $set: updateData },
       { new: true }
-    ).lean();
+    );
 
     logger.info("Order status updated successfully", {
       orderId,
@@ -75,7 +75,7 @@ export async function updateOrderStatus(
       paymentStatus,
     });
 
-    return result;
+    return result.toObject();
   } catch (error) {
     logger.error("Failed to update order status", {
       orderId,
@@ -87,11 +87,11 @@ export async function updateOrderStatus(
 
 export async function getOrderWithItems(orderId) {
   try {
-    const order = await Order.findById(orderId).lean();
+    const order = await Order.findById(orderId);
 
     if (!order) return null;
 
-    return order;
+    return order.toObject();
   } catch (error) {
     logger.error("Failed to get order with items", {
       orderId,
@@ -124,14 +124,14 @@ export async function insertOrderItems(orderId, items) {
       orderId,
       { $push: { items: { $each: formattedItems } } },
       { new: true }
-    ).lean();
+    );
 
     logger.info("Order items inserted successfully", {
       orderId,
       itemsCount: items.length,
     });
 
-    return result.items;
+    return result.items.map(item => item.toObject());
   } catch (error) {
     logger.error("Failed to insert order items", {
       orderId,
