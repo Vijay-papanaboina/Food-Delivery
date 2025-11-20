@@ -1,10 +1,10 @@
-import { upsertRestaurant } from "../repositories/restaurants.repo.js";
-import { upsertMenuItem } from "../repositories/menu.repo.js";
+import { upsertRestaurant } from "../repositories/restaurants.repo.mongoose.js";
+import { upsertMenuItem } from "../repositories/menu.repo.mongoose.js";
 import {
   upsertKitchenOrder,
   getKitchenOrder,
   updateKitchenOrderStatus,
-} from "../repositories/kitchen.repo.js";
+} from "../repositories/kitchen.repo.mongoose.js";
 import { publishMessage, TOPICS } from "../config/kafka.js";
 
 // Preparation configuration (10 seconds fixed)
@@ -137,7 +137,8 @@ export async function markOrderReady(orderId, producer, serviceName) {
   console.log(`✅ [${serviceName}] Order ${orderId} is ready for delivery!`);
 
   // Fetch restaurant details
-  const { getRestaurant } = await import("../repositories/restaurants.repo.js");
+  // Use Mongoose repo
+  const { getRestaurant } = await import("../repositories/restaurants.repo.mongoose.js");
   const restaurant = await getRestaurant(order.restaurantId);
 
   // Publish food-ready event with restaurant and order details

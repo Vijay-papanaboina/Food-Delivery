@@ -10,7 +10,7 @@ import {
   deleteAddress,
   setDefaultAddress,
   getDefaultAddress,
-} from "../repositories/user.repo.js";
+} from "../repositories/user.repo.mongoose.js";
 import { logger } from "../utils/logger.js";
 // No Kafka events needed for user service
 

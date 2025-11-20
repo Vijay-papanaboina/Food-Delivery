@@ -1,9 +1,10 @@
 import bcrypt from "bcrypt";
 import { validationResult } from "express-validator";
-import { createUser, getUserByEmail } from "../repositories/user.repo.js";
+import { createUser, getUserByEmail, getUserById } from "../repositories/user.repo.mongoose.js";
 import { generateTokens } from "../config/jwt.js";
 import { logger } from "../utils/logger.js";
 import { validateDomainForRole } from "../utils/domainValidator.js";
+import { transformUser } from "../utils/dataTransformation.js";
 
 // No Kafka events needed for user service
 
@@ -54,7 +55,7 @@ export const signup = async (req, res) => {
 
     // Generate tokens (minimal payload)
     const { accessToken, refreshToken } = generateTokens({
-      userId: user.id,
+      userId: user._id,
       email: user.email,
       role: user.role,
     });
@@ -67,9 +68,6 @@ export const signup = async (req, res) => {
     // Publish user created event AFTER database insert
     // User created successfully
 
-    // Remove password hash from response
-    const { passwordHash: _, ...userResponse } = user;
-
     // Set refresh token in HTTP-only cookie
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
@@ -80,7 +78,7 @@ export const signup = async (req, res) => {
 
     res.status(201).json({
       message: "User created successfully",
-      user: userResponse,
+      user: transformUser(user),
       accessToken,
     });
   } catch (error) {
@@ -176,7 +174,7 @@ export const login = async (req, res) => {
 
     // Generate tokens (minimal payload)
     const { accessToken, refreshToken } = generateTokens({
-      userId: user.id,
+      userId: user._id,
       email: user.email,
       role: user.role,
     });
@@ -188,9 +186,6 @@ export const login = async (req, res) => {
       requiredRole: requiredRole || "any",
     });
 
-    // Remove password hash from response
-    const { passwordHash: _, ...userResponse } = user;
-
     // Set refresh token in HTTP-only cookie
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
@@ -201,7 +196,7 @@ export const login = async (req, res) => {
 
     res.json({
       message: "Login successful",
-      user: userResponse,
+      user: transformUser(user),
       accessToken,
     });
   } catch (error) {
@@ -228,7 +223,6 @@ export const refreshToken = async (req, res) => {
     const decoded = verifyToken(refreshToken, true);
 
     // Get fresh user data from database
-    const { getUserById } = await import("../repositories/user.repo.js");
     const user = await getUserById(decoded.userId);
 
     if (!user) {
@@ -261,13 +255,10 @@ export const refreshToken = async (req, res) => {
       role: user.role,
     });
 
-    // Remove password hash from user response
-    const { passwordHash: _, ...userResponse } = user;
-
     res.json({
       message: "Token refreshed successfully",
       accessToken,
-      user: userResponse,
+      user: transformUser(user),
     });
   } catch (error) {
     console.error("Refresh token error:", error);
@@ -286,7 +277,6 @@ export const refreshToken = async (req, res) => {
 export const validateToken = async (req, res) => {
   try {
     // Get fresh user data from database (req.user only has JWT payload)
-    const { getUserById } = await import("../repositories/user.repo.js");
     const user = await getUserById(req.user.userId);
 
     if (!user) {
@@ -308,12 +298,9 @@ export const validateToken = async (req, res) => {
       });
     }
 
-    // Remove password hash from user response
-    const { passwordHash: _, ...userResponse } = user;
-
     res.json({
       message: "Token is valid",
-      user: userResponse,
+      user: transformUser(user),
     });
   } catch (error) {
     console.error("Token validation error:", error);

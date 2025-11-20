@@ -3,7 +3,7 @@ import {
   getCartItemsByUserId,
   upsertCartItem,
   clearCartByUserId,
-} from "../repositories/cart.repo.js";
+} from "../repositories/cart.repo.mongoose.js";
 import { logger } from "../utils/logger.js";
 
 export const getCart = async (req, res) => {

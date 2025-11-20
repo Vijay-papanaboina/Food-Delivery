@@ -5,8 +5,7 @@ import {
   deleteMenuItemRow,
   setMenuItemAvailability,
   getMenuItemsByIds,
-} from "../repositories/menu.repo.js";
-// Removed uuid import - using database-generated IDs now
+} from "../repositories/menu.repo.mongoose.js";
 
 export const addMenuItem = async (req, res) => {
   try {
@@ -23,7 +22,6 @@ export const addMenuItem = async (req, res) => {
     }
 
     const menuItem = {
-      // Don't provide itemId - let database generate it
       restaurantId,
       name,
       description: description || "",
@@ -38,7 +36,10 @@ export const addMenuItem = async (req, res) => {
 
     res.status(201).json({
       message: "Menu item added successfully",
-      item: createdMenuItem,
+      item: {
+        ...createdMenuItem,
+        itemId: createdMenuItem._id, // Ensure consistent ID naming
+      },
     });
   } catch (error) {
     console.error("Error adding menu item:", error.message);
@@ -54,27 +55,35 @@ export const updateMenuItem = async (req, res) => {
     const updates = req.body;
 
     const row = await getMenuItemById(itemId);
-    if (!row || row.restaurant_id !== restaurantId) {
+    // Check if item exists and belongs to the restaurant
+    // Mongoose ID is ObjectId, so we compare strings
+    if (!row || row.restaurantId.toString() !== restaurantId) {
       return res.status(404).json({ error: "Menu item not found" });
     }
 
     const existingItem = {
-      itemId: row.item_id,
-      restaurantId: row.restaurant_id,
+      itemId: row._id,
+      restaurantId: row.restaurantId,
       name: row.name,
       description: row.description,
       price: parseFloat(row.price),
       category: row.category,
-      isAvailable: row.is_available,
-      preparationTime: row.preparation_time,
-      imageUrl: row.image_url,
-      createdAt: new Date().toISOString(),
+      isAvailable: row.isAvailable,
+      preparationTime: row.preparationTime,
+      imageUrl: row.imageUrl,
+      createdAt: row.createdAt,
     };
 
-    const updatedItem = { ...existingItem, ...updates, itemId, restaurantId };
-    await upsertMenuItem(updatedItem);
+    const updatedItemData = { ...existingItem, ...updates, itemId, restaurantId };
+    const updatedItem = await upsertMenuItem(updatedItemData);
 
-    res.json({ message: "Menu item updated successfully", item: updatedItem });
+    res.json({ 
+      message: "Menu item updated successfully", 
+      item: {
+        ...updatedItem,
+        itemId: updatedItem._id,
+      }
+    });
   } catch (error) {
     console.error("Error updating menu item:", error.message);
     res
@@ -132,18 +141,18 @@ export const getMenuItem = async (req, res) => {
       return res.status(404).json({ error: "Menu item not found" });
     }
 
-    // Transform to camelCase for API response
+    // Transform to camelCase for API response (already camelCase in Mongoose, just mapping ID)
     const item = {
-      itemId: row.item_id,
-      restaurantId: row.restaurant_id,
+      itemId: row._id,
+      restaurantId: row.restaurantId,
       name: row.name,
       description: row.description,
       price: parseFloat(row.price),
       category: row.category,
-      isAvailable: row.is_available,
-      preparationTime: row.preparation_time,
-      imageUrl: row.image_url,
-      createdAt: row.created_at,
+      isAvailable: row.isAvailable,
+      preparationTime: row.preparationTime,
+      imageUrl: row.imageUrl,
+      createdAt: row.createdAt,
     };
 
     res.json({
@@ -167,16 +176,19 @@ export const validateMenuItemsForOrder = async (req, res) => {
     }
     const itemIds = items.map((i) => i.id);
     const rows = await getMenuItemsByIds(restaurantId, itemIds);
-    const map = new Map(rows.map((r) => [r.item_id, r]));
+    
+    // Map using _id string
+    const map = new Map(rows.map((r) => [r._id.toString(), r]));
     const errors = [];
     const validated = [];
+    
     for (const item of items) {
       const db = map.get(item.id);
       if (!db) {
         errors.push(`Item ${item.id} not found in restaurant menu`);
         continue;
       }
-      if (!db.is_available) {
+      if (!db.isAvailable) {
         errors.push(`Item ${db.name} is currently unavailable`);
         continue;
       }

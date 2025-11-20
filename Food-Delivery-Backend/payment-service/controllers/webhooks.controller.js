@@ -2,9 +2,8 @@ import { stripe } from "../config/stripe.js";
 import {
   updatePaymentFields,
   getPaymentByOrderId,
-} from "../repositories/payments.repo.js";
+} from "../repositories/payments.repo.mongoose.js";
 import { publishMessage, TOPICS } from "../config/kafka.js";
-import { logger } from "../utils/logger.js";
 
 export const handleStripeWebhook = async (req, res) => {
   const sig = req.headers["stripe-signature"];

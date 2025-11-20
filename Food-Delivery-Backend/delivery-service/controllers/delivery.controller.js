@@ -7,12 +7,13 @@ import {
   declineDelivery as declineDeliveryRepo,
   getDeliveryWithFullDetails,
   getDelivery,
-} from "../repositories/deliveries.repo.js";
+} from "../repositories/deliveries.repo.mongoose.js";
 import {
   getDrivers,
   updateDriverAvailability,
   getDriverByUserId,
-} from "../repositories/drivers.repo.js";
+} from "../repositories/drivers.repo.mongoose.js";
+import { transformDelivery, transformDriver } from "../utils/dataTransformation.js";
 import {
   pickupDelivery,
   completeDelivery,
@@ -40,22 +41,23 @@ export const getDeliveryByOrder = async (req, res) => {
         .status(404)
         .json({ error: "Delivery not found for this order" });
 
-    // Transform database fields to camelCase for API response
+    // Mongoose returns camelCase, so we can use it directly
+    // But we ensure consistent naming for the API response
     const transformedDelivery = {
-      deliveryId: delivery.delivery_id,
-      orderId: delivery.order_id,
-      driverId: delivery.driver_id,
-      driverName: delivery.driver_name,
-      driverPhone: delivery.driver_phone,
+      id: delivery._id,
+      deliveryd: delivery.deliveryId,
+      orderId: delivery.orderId,
+      driverId: delivery.driverId,
+      driverName: delivery.driverName,
+      driverPhone: delivery.driverPhone,
       vehicle: delivery.vehicle,
-      licensePlate: delivery.license_plate,
+      licensePlate: delivery.licensePlate,
       status: delivery.status,
-      assignedAt: delivery.assigned_at,
-      estimatedDeliveryTime: delivery.estimated_delivery_time,
-      actualDeliveryTime: delivery.actual_delivery_time,
-      createdAt: delivery.created_at,
+      assignedAt: delivery.assignedAt,
+      estimatedDeliveryTime: delivery.estimatedDeliveryTime,
+      actualDeliveryTime: delivery.actualDeliveryTime,
+      createdAt: delivery.createdAt,
     };
-
     res.json({
       message: "Delivery retrieved successfully",
       delivery: transformedDelivery,
@@ -262,10 +264,11 @@ export const toggleMyAvailability = async (req, res) => {
     }
 
     // Get driver record by userId
-    const driver = await getDriverByUserId(userId);
-    if (!driver) {
+    const rawDriver = await getDriverByUserId(userId);
+    if (!rawDriver) {
       return res.status(404).json({ error: "Driver not found" });
     }
+    const driver = transformDriver(rawDriver);
 
     // Check if driver has an active delivery
     if (!isAvailable) {
@@ -312,10 +315,11 @@ export const acceptDelivery = async (req, res) => {
     const userId = req.user?.userId; // From JWT token
 
     // Get driver record
-    const driver = await getDriverByUserId(userId);
-    if (!driver) {
+    const rawDriver = await getDriverByUserId(userId);
+    if (!rawDriver) {
       return res.status(404).json({ error: "Driver not found" });
     }
+    const driver = transformDriver(rawDriver);
 
     // Get delivery
     const delivery = await getDelivery(deliveryId);
@@ -325,7 +329,14 @@ export const acceptDelivery = async (req, res) => {
 
     // Verify delivery is assigned to this driver
     // delivery.driverId stores the user ID (driver.id now equals user.id)
-    if (delivery.driverId !== driver.id) {
+    const deliveryDriverId = delivery.driverId?.toString() || delivery.driverId;
+    const currentDriverId = driver.id?.toString() || driver.id;
+
+    if (deliveryDriverId !== currentDriverId) {
+      logger.warn("Delivery not assigned to this driver", {
+        deliveryDriverId,
+        currentDriverId,
+      });
       return res.status(403).json({
         error: "This delivery is not assigned to you",
       });
@@ -354,13 +365,13 @@ export const acceptDelivery = async (req, res) => {
       req.producer,
       TOPICS.DELIVERY_ACCEPTED,
       {
-        deliveryId,
-        orderId: delivery.orderId,
-        driverId: driver.id,
+        deliveryId: deliveryId.toString(),
+        orderId: delivery.orderId?.toString() || delivery.orderId,
+        driverId: driver.id?.toString() || driver.id,
         driverName: driver.name,
         timestamp: new Date().toISOString(),
       },
-      delivery.orderId
+      delivery.orderId?.toString() || delivery.orderId
     );
 
     res.json({
@@ -386,10 +397,11 @@ export const declineDelivery = async (req, res) => {
     const userId = req.user?.userId; // From JWT token
 
     // Get driver record
-    const driver = await getDriverByUserId(userId);
-    if (!driver) {
+    const rawDriver = await getDriverByUserId(userId);
+    if (!rawDriver) {
       return res.status(404).json({ error: "Driver not found" });
     }
+    const driver = transformDriver(rawDriver);
 
     // Get delivery
     const delivery = await getDelivery(deliveryId);
@@ -398,8 +410,10 @@ export const declineDelivery = async (req, res) => {
     }
 
     // Verify delivery is assigned to this driver
-    // delivery.driverId stores the user ID (driver.id now equals user.id)
-    if (delivery.driverId !== driver.id) {
+    const deliveryDriverId = delivery.driverId?.toString() || delivery.driverId;
+    const currentDriverId = driver.id?.toString() || driver.id;
+    
+    if (deliveryDriverId !== currentDriverId) {
       return res.status(403).json({
         error: "This delivery is not assigned to you",
       });
@@ -429,14 +443,14 @@ export const declineDelivery = async (req, res) => {
       req.producer,
       TOPICS.DELIVERY_DECLINED,
       {
-        deliveryId,
-        orderId: delivery.orderId,
-        driverId: driver.id,
+        deliveryId: deliveryId.toString(),
+        orderId: delivery.orderId?.toString() || delivery.orderId,
+        driverId: driver.id?.toString() || driver.id,
         driverName: driver.name,
         reason,
         timestamp: new Date().toISOString(),
       },
-      delivery.orderId
+      delivery.orderId?.toString() || delivery.orderId
     );
 
     // Trigger reassignment
@@ -472,9 +486,12 @@ export const getDeliveryDetails = async (req, res) => {
     const { deliveryId } = req.params;
 
     const delivery = await getDeliveryWithFullDetails(deliveryId);
+    
     if (!delivery) {
       return res.status(404).json({ error: "Delivery not found" });
     }
+
+    const transformedDelivery = transformDelivery(delivery);
 
     logger.info("Delivery details retrieved", {
       deliveryId,
@@ -482,7 +499,7 @@ export const getDeliveryDetails = async (req, res) => {
 
     res.json({
       message: "Delivery details retrieved successfully",
-      delivery,
+      delivery: transformedDelivery,
     });
   } catch (error) {
     logger.error("Error getting delivery details", {

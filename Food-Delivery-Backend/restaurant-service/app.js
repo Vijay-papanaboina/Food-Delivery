@@ -2,7 +2,7 @@ import express from "express";
 import cors from "cors";
 import morgan from "morgan";
 import buildRoutes from "./routes/index.routes.js";
-import { getRestaurantStats } from "./repositories/restaurants.repo.js";
+import { getRestaurantStats } from "./repositories/restaurants.repo.mongoose.js";
 
 const SERVICE_NAME = process.env.SERVICE_NAME || "restaurant-service";
 

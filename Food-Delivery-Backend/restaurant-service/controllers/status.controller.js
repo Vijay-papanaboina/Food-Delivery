@@ -1,7 +1,7 @@
 import {
   toggleRestaurantStatus as toggleRestaurantStatusRepo,
   getRestaurantStatus,
-} from "../repositories/restaurants.repo.js";
+} from "../repositories/restaurants.repo.mongoose.js";
 import { markOrderReady } from "../handlers/restaurant.handlers.js";
 
 export const toggleRestaurantStatus = async (req, res) => {
@@ -32,9 +32,10 @@ export const checkRestaurantStatus = async (req, res) => {
     const r = await getRestaurantStatus(restaurantId);
     if (!r) return res.status(404).json({ error: "Restaurant not found" });
     let reason = "Restaurant is open";
-    let open = r.is_open && r.is_active;
+    // Mongoose returns camelCase
+    let open = r.isOpen && r.isActive;
     if (!open) {
-      reason = !r.is_active
+      reason = !r.isActive
         ? "Restaurant is inactive"
         : "Restaurant is temporarily closed";
     }

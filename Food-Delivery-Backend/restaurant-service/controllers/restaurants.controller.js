@@ -3,13 +3,13 @@ import {
   getRestaurant,
   getRestaurantByOwner,
   getRestaurantStats,
-} from "../repositories/restaurants.repo.js";
-import { getMenuItems } from "../repositories/menu.repo.js";
+} from "../repositories/restaurants.repo.mongoose.js";
+import { getMenuItems } from "../repositories/menu.repo.mongoose.js";
 import { logger } from "../utils/logger.js";
 import {
   getKitchenOrders,
-  upsertKitchenOrder,
-} from "../repositories/kitchen.repo.js";
+} from "../repositories/kitchen.repo.mongoose.js";
+import { transformKitchenOrder, transformRestaurant, transformMenuItem } from "../utils/dataTransformation.js";
 
 export const listRestaurants = async (req, res) => {
   try {
@@ -22,7 +22,8 @@ export const listRestaurants = async (req, res) => {
     if (cuisine) filters.cuisine = cuisine;
     if (isActive !== undefined) filters.isActive = isActive === "true";
     if (minRating) filters.minRating = minRating;
-    const restaurants = await getRestaurants(filters);
+    const rawRestaurants = await getRestaurants(filters);
+    const restaurants = rawRestaurants.map(transformRestaurant);
 
     logger.info("Restaurants retrieved successfully", {
       count: restaurants.length,
@@ -38,7 +39,7 @@ export const listRestaurants = async (req, res) => {
     logger.error("Failed to retrieve restaurants", {
       error: error.message,
       stack: error.stack,
-      filters,
+      filters: { cuisine: req.query.cuisine, isActive: req.query.isActive, minRating: req.query.minRating },
     });
     res.status(500).json({
       error: "Failed to retrieve restaurants",
@@ -53,7 +54,7 @@ export const getRestaurantById = async (req, res) => {
     const restaurant = await getRestaurant(id);
     if (!restaurant)
       return res.status(404).json({ error: "Restaurant not found" });
-    res.json({ message: "Restaurant retrieved successfully", restaurant });
+    res.json({ message: "Restaurant retrieved successfully", restaurant: transformRestaurant(restaurant) });
   } catch (error) {
     res
       .status(500)
@@ -77,12 +78,12 @@ export const getMyRestaurant = async (req, res) => {
 
     logger.info("Restaurant retrieved successfully", {
       userId,
-      restaurantId: restaurant.restaurant_id,
+      restaurantId: restaurant._id,
     });
 
     res.json({
       message: "Restaurant retrieved successfully",
-      restaurant,
+      restaurant: transformRestaurant(restaurant),
     });
   } catch (error) {
     logger.error("Failed to retrieve restaurant for user", {
@@ -130,20 +131,7 @@ export const getRestaurantMenu = async (req, res) => {
     }
 
     const menu = await getMenuItems(id, filters);
-
-    // Transform menu items to camelCase for API response
-    const transformedMenu = menu.map((item) => ({
-      itemId: item.item_id,
-      restaurantId: item.restaurant_id,
-      name: item.name,
-      description: item.description,
-      price: parseFloat(item.price),
-      category: item.category,
-      isAvailable: item.is_available,
-      preparationTime: item.preparation_time,
-      imageUrl: item.image_url,
-      createdAt: item.created_at,
-    }));
+    const transformedMenu = menu.map(transformMenuItem);
 
     res.json({
       message: "Restaurant menu retrieved successfully",
@@ -176,21 +164,25 @@ export const listKitchenOrders = async (req, res) => {
         .json({ error: "No restaurant found for this user" });
     }
 
-    const filters = { restaurantId: restaurant.restaurant_id };
+    const filters = { restaurantId: restaurant._id };
     if (status) filters.status = status;
 
     logger.info("Getting kitchen orders", {
       userId,
-      restaurantId: restaurant.restaurant_id,
+      restaurantId: restaurant._id,
       filters,
     });
 
-    const orders = await getKitchenOrders(filters);
+    let orders = await getKitchenOrders(filters);
+
+    orders = orders.map(transformKitchenOrder);
+
+    console.log("kitchen orders:",orders);
     const stats = await getRestaurantStats();
 
     logger.info("Kitchen orders retrieved successfully", {
       userId,
-      restaurantId: restaurant.restaurant_id,
+      restaurantId: restaurant._id,
       orderCount: orders.length,
     });
 

@@ -1,4 +1,4 @@
-import { getOrder, updateOrderStatus } from "../repositories/orders.repo.js";
+import { getOrder, updateOrderStatus } from "../repositories/orders.repo.mongoose.js";
 import { publishMessage, TOPICS } from "../config/kafka.js";
 
 /**
@@ -46,7 +46,7 @@ export async function handlePaymentProcessed(
     };
 
     const orderConfirmedData = {
-      orderId: order.id,
+      orderId: orderId, // Use the orderId from the function argument
       restaurantId: order.restaurantId,
       userId: order.userId,
       items: sanitizedItems,

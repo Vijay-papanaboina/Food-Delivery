@@ -4,16 +4,16 @@ import {
   getOrder,
   updateOrderStatus,
   insertOrderItems,
-} from "../repositories/orders.repo.js";
+} from "../repositories/orders.repo.mongoose.js";
 import {
-  listOrdersDrizzle,
-  getOrderStatsDrizzle,
-  getRestaurantOrderStats,
-} from "../repositories/orders.stats.repo.js";
+  getUserOrders,
+  getOrderStats as getOrderStatsRepo,
+  getRestaurantOrders,
+} from "../repositories/orders.stats.repo.mongoose.js";
 import { TOPICS, publishMessage } from "../config/kafka.js";
 import { logger } from "../utils/logger.js";
-import { db } from "../config/db.js";
-import { orders, orderItems } from "../db/schema.js";
+import { Order } from "../db/mongoose-schema.js";
+import { transformOrder } from "../utils/dataTransformation.js";
 
 export const buildCreateOrderController =
   (producer, serviceName) => async (req, res) => {
@@ -180,44 +180,31 @@ export const buildCreateOrderController =
       const finalCustomerName = customerName;
       const finalCustomerPhone = customerPhone;
 
-      // Use transaction to ensure order and order items are created together
-      const createdOrder = await db.transaction(async (tx) => {
-        // Insert order
-        const [order] = await tx
-          .insert(orders)
-          .values({
-            restaurantId,
-            userId,
-            deliveryAddress,
-            customerName: finalCustomerName || null,
-            customerPhone: finalCustomerPhone || null,
-            status: "pending",
-            paymentStatus: "pending",
-            total: String(total),
-            createdAt: new Date(),
-            confirmedAt: null,
-            deliveredAt: null,
-          })
-          .returning();
-
-        // Insert order items in same transaction
-        const orderItemsData = validatedItems.map((item) => ({
-          orderId: order.id,
+      // Create order with embedded items using Mongoose
+      const createdOrder = await Order.create({
+        restaurantId,
+        userId,
+        deliveryAddress,
+        customerName: finalCustomerName || null,
+        customerPhone: finalCustomerPhone || null,
+        status: "pending",
+        paymentStatus: "pending",
+        total: total,
+        items: validatedItems.map((item) => ({
           itemId: item.itemId,
           quantity: item.quantity,
-          price: String(item.price),
-        }));
-
-        await tx.insert(orderItems).values(orderItemsData);
-
-        return order;
+          price: item.price,
+        })),
+        createdAt: new Date(),
+        confirmedAt: null,
+        deliveredAt: null,
       });
 
       // Get the complete order with items for response
-      const completeOrder = await getOrder(createdOrder.id);
+      const completeOrder = await getOrder(createdOrder._id.toString());
 
       logger.info("Order created in database", {
-        orderId: createdOrder.id,
+        orderId: createdOrder._id.toString(),
         total: createdOrder.total,
       });
 
@@ -226,34 +213,24 @@ export const buildCreateOrderController =
         producer,
         TOPICS.ORDER_CREATED,
         {
-          orderId: createdOrder.id,
+          orderId: createdOrder._id.toString(),
           restaurantId: createdOrder.restaurantId,
           items: validatedItems, // Use validated items for Kafka event
           userId: createdOrder.userId,
           total: createdOrder.total,
           createdAt: createdOrder.createdAt,
         },
-        createdOrder.id,
+        createdOrder._id.toString(),
       );
 
       logger.info("Order created event published", {
-        orderId: createdOrder.id,
+        orderId: createdOrder._id.toString(),
         topic: TOPICS.ORDER_CREATED,
       });
 
       res.status(201).json({
         message: "Order created successfully",
-        order: {
-          orderId: completeOrder.orderId,
-          restaurantId: completeOrder.restaurantId,
-          userId: completeOrder.userId,
-          items: completeOrder.items,
-          deliveryAddress: completeOrder.deliveryAddress,
-          status: completeOrder.status,
-          paymentStatus: completeOrder.paymentStatus,
-          total: completeOrder.total,
-          createdAt: completeOrder.createdAt,
-        },
+        order: transformOrder(completeOrder),
       });
     } catch (error) {
       logger.error("Order creation failed", {
@@ -274,7 +251,7 @@ export const getOrderById = async (req, res) => {
     const { id } = req.params;
     const order = await getOrder(id);
     if (!order) return res.status(404).json({ error: "Order not found" });
-    res.json({ message: "Order retrieved successfully", order });
+    res.json({ message: "Order retrieved successfully", order: transformOrder(order) });
   } catch (error) {
     res
       .status(500)
@@ -284,15 +261,14 @@ export const getOrderById = async (req, res) => {
 
 export const listOrders = async (req, res) => {
   try {
-    const { status, restaurantId, limit } = req.query;
+    const { status, limit } = req.query;
     const userId = req.user.userId; // Get user ID from JWT token
 
-    const orders = await listOrdersDrizzle({
+    const rawOrders = await getUserOrders(userId, {
       status,
-      userId, // Use JWT user ID instead of query param
-      restaurantId,
       limit,
     });
+    const orders = rawOrders.map(transformOrder);
     res.json({
       message: "Orders retrieved successfully",
       orders,
@@ -308,7 +284,7 @@ export const listOrders = async (req, res) => {
 
 export const getOrderStats = async (req, res) => {
   try {
-    const stats = await getOrderStatsDrizzle();
+    const stats = await getOrderStatsRepo();
     res.json({ message: "Order statistics retrieved successfully", stats });
   } catch (error) {
     res.status(500).json({
@@ -321,7 +297,24 @@ export const getOrderStats = async (req, res) => {
 export const getRestaurantOrderStatsController = async (req, res) => {
   try {
     const { restaurantId } = req.params;
-    const stats = await getRestaurantOrderStats(restaurantId);
+    const orders = await getRestaurantOrders(restaurantId, { limit: 100 });
+    const stats = {
+      totalOrders: orders.length,
+      todayOrders: orders.filter(o => {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        return new Date(o.createdAt) >= today;
+      }).length,
+      todayRevenue: orders
+        .filter(o => {
+          const today = new Date();
+          today.setHours(0, 0, 0, 0);
+          return new Date(o.createdAt) >= today;
+        })
+        .reduce((sum, o) => sum + o.total, 0)
+        .toFixed(2),
+      averagePreparationTime: 15, // Mock value
+    };
     res.json({
       message: "Restaurant order statistics retrieved successfully",
       stats,
@@ -351,7 +344,7 @@ export const updateOrderStatusController = async (req, res) => {
     const deliveredAt =
       status === "delivered" ? new Date().toISOString() : null;
 
-    await updateOrderStatus(
+    const updatedOrder = await updateOrderStatus(
       orderId,
       status,
       paymentStatus,
@@ -367,11 +360,7 @@ export const updateOrderStatusController = async (req, res) => {
 
     res.json({
       message: "Order status updated successfully",
-      order: {
-        orderId,
-        status,
-        paymentStatus,
-      },
+      order: transformOrder(updatedOrder),
     });
   } catch (error) {
     logger.error("Failed to update order status", {

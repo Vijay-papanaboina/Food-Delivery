@@ -1,5 +1,6 @@
-import { upsertPayment } from "../repositories/payments.repo.js";
+import { upsertPayment } from "../repositories/payments.repo.mongoose.js";
 import { logger } from "../utils/logger.js";
+import { transformPayment } from "../utils/dataTransformation.js";
 import { stripe, STRIPE_CONFIG } from "../config/stripe.js";
 
 export const processPayment = async (req, res) => {
@@ -172,13 +173,6 @@ export const processPayment = async (req, res) => {
       createdAt: new Date().toISOString(),
       processedAt: null,
       failureReason: null,
-    });
-
-    logger.info("Stripe Checkout session created", {
-      sessionId: session.id,
-      orderId,
-      actualAmount: order.total,
-      itemCount: order.items.length,
     });
 
     res.status(201).json({

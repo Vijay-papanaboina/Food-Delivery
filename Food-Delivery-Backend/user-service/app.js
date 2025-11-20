@@ -5,7 +5,7 @@ import morgan from "morgan";
 import rateLimit from "express-rate-limit";
 import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
-import { initDb } from "./config/db.js";
+import { initDb } from "./config/db.mongoose.js";
 import createRoutes from "./routes/index.routes.js";
 
 // Load environment variables
