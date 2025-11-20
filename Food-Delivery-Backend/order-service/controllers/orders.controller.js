@@ -63,9 +63,9 @@ export const buildCreateOrderController =
 
       // Validate each item in the array
       for (const [index, item] of items.entries()) {
-        if (!item.id || !item.price || !item.quantity) {
+        if (!item.itemId || !item.price || !item.quantity) {
           return res.status(400).json({
-            error: `Item at index ${index} missing required fields: id, price, quantity`,
+            error: `Item at index ${index} missing required fields: itemId, price, quantity`,
           });
         }
         if (typeof item.price !== "number" || item.price <= 0) {
@@ -137,12 +137,18 @@ export const buildCreateOrderController =
         });
       }
 
+      const itemsToSendForValidation = items.map(item => ({
+        itemId: item.itemId, // Use itemId for validation
+        quantity: item.quantity,
+        price: item.price,
+      }));
+
       const validateResp = await fetch(
         `${restaurantServiceUrl}/api/restaurant-service/restaurants/${restaurantId}/menu/validate`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ items }),
+          body: JSON.stringify({ items: itemsToSendForValidation }),
         },
       );
       if (!validateResp.ok) {
@@ -219,6 +225,7 @@ export const buildCreateOrderController =
           userId: createdOrder.userId,
           total: createdOrder.total,
           createdAt: createdOrder.createdAt,
+          restaurant: restaurantData.restaurant, // Include full restaurant data
         },
         createdOrder._id.toString(),
       );

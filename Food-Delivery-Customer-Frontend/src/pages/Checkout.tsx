@@ -151,7 +151,7 @@ export default function Checkout() {
       const orderResult = await orderApi.createOrder({
         restaurantId: restaurantId!,
         items: items.map((item) => ({
-          id: item.itemId,
+          itemId: item.itemId,
           quantity: item.quantity,
           price: item.price,
         })),

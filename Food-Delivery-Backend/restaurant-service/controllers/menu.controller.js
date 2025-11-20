@@ -171,21 +171,36 @@ export const validateMenuItemsForOrder = async (req, res) => {
   try {
     const { restaurantId } = req.params;
     const { items } = req.body;
+
+    console.log(`[validateMenuItemsForOrder] Received items in req.body:`, items);
+
     if (!Array.isArray(items) || items.length === 0) {
       return res.status(400).json({ error: "Items must be a non-empty array" });
     }
-    const itemIds = items.map((i) => i.id);
+    const itemIds = items.map((i) => i.itemId);
+
+    console.log(`[validateMenuItemsForOrder] Validating for restaurantId: ${restaurantId}, itemIds: ${itemIds.join(', ')}`);
+
     const rows = await getMenuItemsByIds(restaurantId, itemIds);
+    console.log(`[validateMenuItemsForOrder] Items found in DB (rows):`, rows);
     
-    // Map using _id string
-    const map = new Map(rows.map((r) => [r._id.toString(), r]));
+    // Map using _id string (now using 'id' virtual)
+    const map = new Map(rows.map((r) => {
+      console.log(`[validateMenuItemsForOrder] Mapping item:`, r);
+      if (!r || !r.id) { // Check r.id instead of r._id
+        console.error(`[validateMenuItemsForOrder] Found undefined or null item or id during map:`, r);
+        // Return a dummy value or throw an error if this state is unexpected
+        return [null, null]; // Or handle more gracefully based on expected behavior
+      }
+      return [r.id.toString(), r]; // Use r.id.toString()
+    }));
     const errors = [];
     const validated = [];
     
     for (const item of items) {
-      const db = map.get(item.id);
+      const db = map.get(item.itemId);
       if (!db) {
-        errors.push(`Item ${item.id} not found in restaurant menu`);
+        errors.push(`Item ${item.itemId} not found in restaurant menu`);
         continue;
       }
       if (!db.isAvailable) {
@@ -193,7 +208,7 @@ export const validateMenuItemsForOrder = async (req, res) => {
         continue;
       }
       validated.push({
-        itemId: item.id,
+        itemId: item.itemId,
         name: db.name,
         price: parseFloat(db.price),
         quantity: item.quantity,

@@ -1,4 +1,5 @@
 import { MenuItem } from "../db/mongoose-schema.js";
+import mongoose from "mongoose";
 
 export async function upsertMenuItem(menuItemData) {
   // If itemId is provided, update
@@ -71,9 +72,10 @@ export async function setMenuItemAvailability(restaurantId, itemId, isAvailable)
 }
 
 export async function getMenuItemsByIds(restaurantId, itemIds) {
+  const objectItemIds = itemIds.map(id => new mongoose.Types.ObjectId(id));
   const items = await MenuItem.find({
     restaurantId,
-    _id: { $in: itemIds }
+    _id: { $in: objectItemIds }
   });
   return items.map(item => item.toObject());
 }

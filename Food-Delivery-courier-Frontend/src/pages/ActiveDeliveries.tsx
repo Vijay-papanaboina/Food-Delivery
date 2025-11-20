@@ -58,10 +58,10 @@ export const ActiveDeliveries = () => {
             <div className="grid gap-4 md:grid-cols-2">
               {pendingDeliveries.map((delivery) => (
                 <DeliveryCard
-                  key={delivery.deliveryId}
+                  key={delivery.id}
                   delivery={delivery}
                   onViewDetails={() =>
-                    navigate(`/deliveries/${delivery.deliveryId}`)
+                    navigate(`/deliveries/${delivery.id}`)
                   }
                 />
               ))}
@@ -78,10 +78,10 @@ export const ActiveDeliveries = () => {
             <div className="grid gap-4 md:grid-cols-2">
               {acceptedDeliveries.map((delivery) => (
                 <DeliveryCard
-                  key={delivery.deliveryId}
+                  key={delivery.id}
                   delivery={delivery}
                   onViewDetails={() =>
-                    navigate(`/deliveries/${delivery.deliveryId}`)
+                    navigate(`/deliveries/${delivery.id}`)
                   }
                 />
               ))}
@@ -98,10 +98,10 @@ export const ActiveDeliveries = () => {
             <div className="grid gap-4 md:grid-cols-2">
               {pickedUpDeliveries.map((delivery) => (
                 <DeliveryCard
-                  key={delivery.deliveryId}
+                  key={delivery.id}
                   delivery={delivery}
                   onViewDetails={() =>
-                    navigate(`/deliveries/${delivery.deliveryId}`)
+                    navigate(`/deliveries/${delivery.id}`)
                   }
                 />
               ))}

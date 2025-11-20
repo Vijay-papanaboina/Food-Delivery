@@ -300,7 +300,7 @@ export async function autoAssignDriver(orderData, producer, serviceName) {
 
     console.log(`🚗 [${serviceName}] Driver selected for auto-assignment`, {
       orderId,
-      driverId: selectedDriver._id.toString(),
+      driverId: selectedDriver.id,
       driverName: selectedDriver.name,
       rating: selectedDriver.rating,
       totalDeliveries: selectedDriver.totalDeliveries,
@@ -318,7 +318,7 @@ export async function autoAssignDriver(orderData, producer, serviceName) {
     // Create delivery record
     const delivery = await createDelivery({
       orderId,
-      driverId: selectedDriver._id.toString(),
+      driverId: selectedDriver.id,
       restaurantId,
       userId: orderData.userId,
       deliveryAddress,
@@ -332,19 +332,19 @@ export async function autoAssignDriver(orderData, producer, serviceName) {
     });
 
     // Update driver availability to false
-    await updateDriverAvailability(selectedDriver._id.toString(), false);
+    await updateDriverAvailability(selectedDriver.id, false);
 
     // Increment driver's delivery count
-    await incrementDriverDeliveries(selectedDriver._id.toString());
+    await incrementDriverDeliveries(selectedDriver.id);
 
     // Publish delivery assigned event
     await publishMessage(
       producer,
       TOPICS.DELIVERY_ASSIGNED,
       {
-        deliveryId: delivery.deliveryId,
+        deliveryId: delivery.id,
         orderId,
-        driverId: selectedDriver._id.toString(),
+        driverId: selectedDriver.id,
         assignedAt: delivery.assignedAt,
         estimatedDeliveryTime: estimatedDeliveryTime,
       },
@@ -353,14 +353,14 @@ export async function autoAssignDriver(orderData, producer, serviceName) {
 
     console.log(`✅ [${serviceName}] Driver auto-assigned successfully`, {
       orderId,
-      deliveryId: delivery.deliveryId,
-      driverId: selectedDriver._id.toString(),
+      deliveryId: delivery.id,
+      driverId: selectedDriver.id,
       driverName: selectedDriver.name,
     });
 
     return {
-      deliveryId: delivery.deliveryId,
-      driverId: selectedDriver._id.toString(),
+      deliveryId: delivery.id,
+      driverId: selectedDriver.id,
       driverName: selectedDriver.name,
       driverPhone: selectedDriver.phone,
       vehicle: selectedDriver.vehicle,
@@ -464,7 +464,7 @@ export async function handleFoodReady(orderData, producer, serviceName) {
       items,
       total,
       deliveryAddress,
-      restaurant,
+      restaurant, // Destructure restaurant from orderData
       customer,
     } = orderData;
 
@@ -507,7 +507,7 @@ export async function handleFoodReady(orderData, producer, serviceName) {
     await enrichDeliveryWithOrderDetails(assignedDriver.deliveryId, {
       restaurantId,
       restaurantName: restaurant?.name || null,
-      restaurantAddress: restaurant?.address || null,
+      restaurantAddress: restaurant?.address || null, // Pass restaurant.address
       restaurantPhone: restaurant?.phone || null,
       customerName: customer?.name || null,
       customerPhone: customer?.phone || null,
