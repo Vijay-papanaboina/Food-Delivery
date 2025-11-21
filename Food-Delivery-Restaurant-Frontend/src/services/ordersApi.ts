@@ -42,8 +42,8 @@ export class OrdersApi extends ApiService {
     );
   };
 
-  markOrderReady = async (orderId: string): Promise<{ message: string }> => {
-    return this.post(`/api/restaurant-service/kitchen/orders/${orderId}/ready`);
+  markOrderReady = async (id: string): Promise<{ message: string }> => {
+    return this.post(`/api/restaurant-service/kitchen/orders/${id}/ready`);
   };
 
   getOrderStats = async (restaurantId: string): Promise<OrderStats> => {

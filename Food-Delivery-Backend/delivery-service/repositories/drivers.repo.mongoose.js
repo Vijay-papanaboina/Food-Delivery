@@ -62,7 +62,6 @@ export async function getDrivers(filters = {}) {
   const drivers = await q;
   return drivers.map(driver => {
     const driverObject = driver.toObject();
-    console.log(`[getDrivers] Returning driver.toObject():`, driverObject);
     return driverObject;
   });
 }

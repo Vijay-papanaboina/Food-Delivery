@@ -74,7 +74,7 @@ export default function OrderTracking() {
         </Button>
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold">Order #{order.orderId}</h1>
+            <h1 className="text-3xl font-bold">Order #{order.id}</h1>
             <p className="text-muted-foreground">
               Placed on {format(new Date(order.createdAt), "PPP p")}
             </p>

@@ -60,7 +60,7 @@ export const DeliveryDetail = () => {
 
   const handleDeclineConfirm = () => {
     declineMutation.mutate(
-      { deliveryId: deliveryId!, reason: declineReason },
+      { id: deliveryId!, reason: declineReason },
       {
         onSuccess: () => {
           setShowDeclineDialog(false);
@@ -71,12 +71,12 @@ export const DeliveryDetail = () => {
   };
 
   const handlePickup = () => {
-    if (user?.userId && delivery) {
+    if (user?.id && delivery) {
       pickupMutation.mutate(
         {
-          deliveryId: deliveryId!,
+          id: deliveryId!,
           orderId: delivery.orderId,
-          driverId: user.userId,
+          driverId: user.id,
         },
         {
           onSuccess: () => {
@@ -88,12 +88,12 @@ export const DeliveryDetail = () => {
   };
 
   const handleComplete = () => {
-    if (user?.userId && delivery) {
+    if (user?.id && delivery) {
       completeMutation.mutate(
         {
-          deliveryId: deliveryId!,
+          id: deliveryId!,
           orderId: delivery.orderId,
-          driverId: user.userId,
+          driverId: user.id,
         },
         {
           onSuccess: () => {

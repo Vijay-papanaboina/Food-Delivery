@@ -15,7 +15,7 @@ export const useRestaurantProfile = () => {
 
 export const useUpdateRestaurantStatus = () => {
   const { data: restaurantData } = useMyRestaurant();
-  const restaurantId = restaurantData?.restaurant?.restaurantId;
+  const restaurantId = restaurantData?.restaurant?.id;
   const queryClient = useQueryClient();
 
   return useMutation({

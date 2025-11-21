@@ -17,7 +17,7 @@ export const useOrderHistory = (filters?: OrderFilters) => {
     queryKey: ["my-restaurant"],
     queryFn: () => restaurantApi.getMyRestaurant(),
   });
-  const restaurantId = restaurantData?.restaurant?.restaurantId;
+  const restaurantId = restaurantData?.restaurant?.id;
 
   return useQuery({
     queryKey: ["order-history", restaurantId, filters],
@@ -30,7 +30,7 @@ export const useMarkOrderReady = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (orderId: string) => ordersApi.markOrderReady(orderId),
+    mutationFn: (id: string) => ordersApi.markOrderReady(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["kitchen-orders"] });
       toast.success("Order marked as ready!");
@@ -46,7 +46,7 @@ export const useOrderStats = () => {
     queryKey: ["my-restaurant"],
     queryFn: () => restaurantApi.getMyRestaurant(),
   });
-  const restaurantId = restaurantData?.restaurant?.restaurantId;
+  const restaurantId = restaurantData?.restaurant?.id;
 
   return useQuery({
     queryKey: ["order-stats", restaurantId],

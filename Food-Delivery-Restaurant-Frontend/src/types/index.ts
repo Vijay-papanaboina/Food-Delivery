@@ -1,5 +1,5 @@
 export interface KitchenOrder {
-  orderId: string;
+  id: string;
   restaurantId: string;
   userId: string;
   items: OrderItem[];
@@ -19,7 +19,7 @@ export interface KitchenOrder {
 }
 
 export interface OrderItem {
-  menuItemId: string;
+  itemId: string;
   name: string;
   quantity: number;
   price: number;
@@ -27,7 +27,7 @@ export interface OrderItem {
 }
 
 export interface OrderHistory {
-  orderId: string;
+  id: string;
   restaurantId: string;
   userId: string;
   deliveryAddress: {
@@ -52,7 +52,7 @@ export interface OrderStats {
 }
 
 export interface MenuItem {
-  itemId: string;
+  id: string;
   restaurantId: string;
   name: string;
   description: string;
@@ -65,7 +65,7 @@ export interface MenuItem {
 }
 
 export interface Restaurant {
-  restaurantId: string;
+  id: string;
   ownerId: string;
   name: string;
   cuisine: string;

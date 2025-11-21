@@ -25,12 +25,12 @@ export class DeliveryApi extends ApiService {
 
   // Mark delivery as picked up
   pickupDelivery = async (
-    deliveryId: string,
+    id: string,
     orderId: string,
     driverId: string
   ): Promise<{ message: string }> => {
     return this.post("/api/delivery-service/delivery/pickup", {
-      deliveryId,
+      deliveryId: id,
       orderId,
       driverId,
     });
@@ -38,12 +38,12 @@ export class DeliveryApi extends ApiService {
 
   // Mark delivery as completed
   completeDelivery = async (
-    deliveryId: string,
+    id: string,
     orderId: string,
     driverId: string
   ): Promise<{ message: string }> => {
     return this.post("/api/delivery-service/delivery/complete", {
-      deliveryId,
+      deliveryId: id,
       orderId,
       driverId,
     });
@@ -59,10 +59,10 @@ export class DeliveryApi extends ApiService {
 
   // Get full delivery details
   getDeliveryDetails = async (
-    deliveryId: string
+    id: string
   ): Promise<{ message: string; delivery: Delivery }> => {
     return this.get<{ message: string; delivery: Delivery }>(
-      `/api/delivery-service/delivery/${deliveryId}/details`
+      `/api/delivery-service/delivery/${id}/details`
     );
   };
 
@@ -78,21 +78,21 @@ export class DeliveryApi extends ApiService {
 
   // Accept delivery request
   acceptDelivery = async (
-    deliveryId: string
+    id: string
   ): Promise<{ message: string; deliveryId: string }> => {
     return this.post<{ message: string; deliveryId: string }>(
-      `/api/delivery-service/delivery/${deliveryId}/accept`,
+      `/api/delivery-service/delivery/${id}/accept`,
       {}
     );
   };
 
   // Decline delivery request
   declineDelivery = async (
-    deliveryId: string,
+    id: string,
     reason?: string
   ): Promise<{ message: string; deliveryId: string }> => {
     return this.post<{ message: string; deliveryId: string }>(
-      `/api/delivery-service/delivery/${deliveryId}/decline`,
+      `/api/delivery-service/delivery/${id}/decline`,
       { reason }
     );
   };

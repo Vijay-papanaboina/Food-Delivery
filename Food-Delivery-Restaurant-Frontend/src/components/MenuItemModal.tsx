@@ -148,7 +148,7 @@ export const MenuItemModal = ({
         await addMutation.mutateAsync(itemData);
       } else if (mode === "edit" && item) {
         await updateMutation.mutateAsync({
-          itemId: item.itemId,
+          id: item.id,
           itemData,
         });
       }
@@ -163,7 +163,7 @@ export const MenuItemModal = ({
     if (!item) return;
 
     try {
-      await deleteMutation.mutateAsync(item.itemId);
+      await deleteMutation.mutateAsync(item.id);
       setShowDeleteDialog(false);
       onOpenChange(false);
     } catch (error) {
@@ -182,7 +182,7 @@ export const MenuItemModal = ({
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent
           className="sm:max-w-[600px] max-h-[90vh] overflow-hidden flex flex-col [&>button]:hidden"
-          key={item?.itemId || "new"}
+          key={item?.id || "new"}
         >
           <DialogHeader className="sticky top-0 bg-background z-10 pb-4 pt-0 border-b">
             <div className="flex items-start justify-between">

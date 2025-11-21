@@ -20,14 +20,14 @@ export const usePickupDelivery = () => {
 
   return useMutation({
     mutationFn: ({
-      deliveryId,
+      id,
       orderId,
       driverId,
     }: {
-      deliveryId: string;
+      id: string;
       orderId: string;
       driverId: string;
-    }) => deliveryApi.pickupDelivery(deliveryId, orderId, driverId),
+    }) => deliveryApi.pickupDelivery(id, orderId, driverId),
     onSuccess: () => {
       // Invalidate and refetch all delivery-related queries
       queryClient.invalidateQueries({ queryKey: ["deliveries"] });
@@ -51,14 +51,14 @@ export const useCompleteDelivery = () => {
 
   return useMutation({
     mutationFn: ({
-      deliveryId,
+      id,
       orderId,
       driverId,
     }: {
-      deliveryId: string;
+      id: string;
       orderId: string;
       driverId: string;
-    }) => deliveryApi.completeDelivery(deliveryId, orderId, driverId),
+    }) => deliveryApi.completeDelivery(id, orderId, driverId),
     onSuccess: () => {
       // Invalidate and refetch all delivery-related queries
       queryClient.invalidateQueries({ queryKey: ["deliveries"] });
@@ -88,11 +88,11 @@ export const useDriverStats = () => {
 };
 
 // Get full delivery details
-export const useDeliveryDetails = (deliveryId: string) => {
+export const useDeliveryDetails = (id: string) => {
   return useQuery({
-    queryKey: ["delivery", deliveryId],
-    queryFn: () => deliveryApi.getDeliveryDetails(deliveryId),
-    enabled: !!deliveryId,
+    queryKey: ["delivery", id],
+    queryFn: () => deliveryApi.getDeliveryDetails(id),
+    enabled: !!id,
   });
 };
 
@@ -115,7 +115,7 @@ export const useAcceptDelivery = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (deliveryId: string) => deliveryApi.acceptDelivery(deliveryId),
+    mutationFn: (id: string) => deliveryApi.acceptDelivery(id),
     onSuccess: () => {
       // Invalidate all delivery-related queries
       queryClient.invalidateQueries({ queryKey: ["deliveries"] });
@@ -138,12 +138,12 @@ export const useDeclineDelivery = () => {
 
   return useMutation({
     mutationFn: ({
-      deliveryId,
+      id,
       reason,
     }: {
-      deliveryId: string;
+      id: string;
       reason?: string;
-    }) => deliveryApi.declineDelivery(deliveryId, reason),
+    }) => deliveryApi.declineDelivery(id, reason),
     onSuccess: () => {
       // Invalidate all delivery-related queries
       queryClient.invalidateQueries({ queryKey: ["deliveries"] });

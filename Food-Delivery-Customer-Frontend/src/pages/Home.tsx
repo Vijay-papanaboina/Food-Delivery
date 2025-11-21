@@ -181,7 +181,7 @@ export default function Home() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {restaurants.map((restaurant) => (
             <RestaurantCard
-              key={restaurant.restaurantId}
+              key={restaurant.id}
               restaurant={restaurant}
             />
           ))}
@@ -201,7 +201,7 @@ export default function Home() {
 
 interface RestaurantCardProps {
   restaurant: {
-    restaurantId: string;
+    id: string;
     name: string;
     cuisine: string;
     rating: number;
@@ -296,7 +296,7 @@ function RestaurantCard({ restaurant }: RestaurantCardProps) {
       {isDisabled ? (
         <div className="block">{cardContent}</div>
       ) : (
-        <Link to={`/restaurant/${restaurant.restaurantId}`} className="block">
+        <Link to={`/restaurant/${restaurant.id}`} className="block">
           {cardContent}
         </Link>
       )}

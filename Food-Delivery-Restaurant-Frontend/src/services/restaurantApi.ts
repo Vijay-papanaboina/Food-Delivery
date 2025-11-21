@@ -7,8 +7,8 @@ export class RestaurantApi extends ApiService {
     super(config.restaurantApiUrl);
   }
 
-  getRestaurantProfile = async (restaurantId: string): Promise<Restaurant> => {
-    return this.get(`/api/restaurant-service/restaurants/${restaurantId}`);
+  getRestaurantProfile = async (id: string): Promise<Restaurant> => {
+    return this.get(`/api/restaurant-service/restaurants/${id}`);
   };
 
   getMyRestaurant = async (): Promise<{ restaurant: Restaurant }> => {
@@ -16,11 +16,11 @@ export class RestaurantApi extends ApiService {
   };
 
   updateRestaurantStatus = async (
-    restaurantId: string,
+    id: string,
     isOpen: boolean
   ): Promise<{ message: string; restaurantId: string; isOpen: boolean }> => {
     return this.put(
-      `/api/restaurant-service/restaurants/${restaurantId}/status`,
+      `/api/restaurant-service/restaurants/${id}/status`,
       {
         isOpen: isOpen,
       }
@@ -28,18 +28,18 @@ export class RestaurantApi extends ApiService {
   };
 
   getMenuItems = async (
-    restaurantId: string
+    id: string
   ): Promise<{ menu: MenuItem[] }> => {
-    return this.get(`/api/restaurant-service/restaurants/${restaurantId}/menu`);
+    return this.get(`/api/restaurant-service/restaurants/${id}/menu`);
   };
 
   updateMenuItemAvailability = async (
     restaurantId: string,
-    itemId: string,
+    id: string,
     isAvailable: boolean
   ): Promise<{ message: string; itemId: string; isAvailable: boolean }> => {
     return this.put(
-      `/api/restaurant-service/restaurants/${restaurantId}/menu/${itemId}/availability`,
+      `/api/restaurant-service/restaurants/${restaurantId}/menu/${id}/availability`,
       {
         isAvailable: isAvailable,
       }
@@ -58,21 +58,21 @@ export class RestaurantApi extends ApiService {
 
   updateMenuItem = async (
     restaurantId: string,
-    itemId: string,
+    id: string,
     itemData: Partial<MenuItem>
   ): Promise<{ message: string; menuItem: MenuItem }> => {
     return this.put(
-      `/api/restaurant-service/restaurants/${restaurantId}/menu/${itemId}`,
+      `/api/restaurant-service/restaurants/${restaurantId}/menu/${id}`,
       itemData
     );
   };
 
   deleteMenuItem = async (
     restaurantId: string,
-    itemId: string
+    id: string
   ): Promise<{ message: string }> => {
     return this.delete(
-      `/api/restaurant-service/restaurants/${restaurantId}/menu/${itemId}`
+      `/api/restaurant-service/restaurants/${restaurantId}/menu/${id}`
     );
   };
 }

@@ -32,8 +32,8 @@ export const Orders = () => {
     (order) => order.status === "completed" || order.status === "cancelled"
   );
 
-  const handleMarkReady = (orderId: string) => {
-    markReadyMutation.mutate(orderId);
+  const handleMarkReady = (id: string) => {
+    markReadyMutation.mutate(id);
   };
 
   const getStatusBadge = (status: string) => {
@@ -96,11 +96,11 @@ export const Orders = () => {
           ) : (
             <div className="grid gap-4 md:grid-cols-2">
               {activeOrders.map((order) => (
-                <Card key={order.orderId} className="overflow-hidden">
+                <Card key={order.id} className="overflow-hidden">
                   <CardHeader className="pb-3">
                     <div className="flex items-center justify-between">
                       <CardTitle className="text-lg">
-                        Order #{order.orderId.slice(0, 8)}
+                        Order #{order.id.slice(0, 8)}
                       </CardTitle>
                       {getStatusBadge(order.status)}
                     </div>
@@ -149,7 +149,7 @@ export const Orders = () => {
                         order.status !== "completed" &&
                         order.status !== "cancelled" && (
                           <Button
-                            onClick={() => handleMarkReady(order.orderId)}
+                            onClick={() => handleMarkReady(order.id)}
                             disabled={markReadyMutation.isPending}
                             className="w-full mt-2"
                           >
@@ -187,13 +187,13 @@ export const Orders = () => {
             <div className="space-y-3">
               {/* Show completed orders from kitchen first */}
               {completedOrders.map((order) => (
-                <Card key={`kitchen-${order.orderId}`}>
+                <Card key={`kitchen-${order.id}`}>
                   <CardContent className="p-4">
                     <div className="flex items-center justify-between">
                       <div className="flex-1">
                         <div className="flex items-center gap-3 mb-2">
                           <p className="font-semibold">
-                            #{order.orderId.slice(0, 8)}
+                            #{order.id.slice(0, 8)}
                           </p>
                           <Badge variant="outline">{order.status}</Badge>
                         </div>
@@ -212,16 +212,7 @@ export const Orders = () => {
                   </CardContent>
                 </Card>
               ))}
-              {/* Then show order history from order service */}
-              {orderHistory.map((order) => (
-                <Card key={order.orderId}>
-                  <CardContent className="p-4">
-                    <div className="flex items-center justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-3 mb-2">
-                          <p className="font-semibold">
-                            #{order.orderId.slice(0, 8)}
-                          </p>
+                            {/* Then show order history from order service */}              {orderHistory.map((order) => (                <Card key={order.id}>                  <CardContent className="p-4">                    <div className="flex items-center justify-between">                      <div className="flex-1">                        <div className="flex items-center gap-3 mb-2">                          <p className="font-semibold">                            #{order.id.slice(0, 8)}                          </p>
                           <Badge variant="outline">{order.status}</Badge>
                           <Badge variant="secondary">
                             {order.paymentStatus}

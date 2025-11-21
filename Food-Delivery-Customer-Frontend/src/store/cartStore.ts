@@ -15,11 +15,11 @@ interface CartStore {
 
   // Actions
   addItem: (item: Omit<CartItem, "quantity">) => Promise<void>;
-  removeItem: (itemId: string) => Promise<void>;
-  updateQuantity: (itemId: string, quantity: number) => Promise<void>;
+  removeItem: (id: string) => Promise<void>;
+  updateQuantity: (id: string, quantity: number) => Promise<void>;
   clearCart: () => Promise<void>;
   setRestaurant: (restaurantId: string) => void;
-  getItemQuantity: (itemId: string) => number;
+  getItemQuantity: (id: string) => number;
   getTotalItems: () => number;
   getUniqueItemsCount: () => number;
 
@@ -68,12 +68,12 @@ export const useCartStore = create<CartStore>()((set, get) => ({
         // };
       }
 
-      const existingItem = state.items.find((i) => i.itemId === item.itemId);
+      const existingItem = state.items.find((i) => i.id === item.id);
 
       if (existingItem) {
         // Update quantity if item already exists
         const updatedItems = state.items.map((i) =>
-          i.itemId === item.itemId ? { ...i, quantity: i.quantity + 1 } : i
+          i.id === item.id ? { ...i, quantity: i.quantity + 1 } : i
         );
         const subtotal = calculateSubtotal(updatedItems);
         const total = calculateTotal(subtotal);
@@ -112,9 +112,9 @@ export const useCartStore = create<CartStore>()((set, get) => ({
     }
   },
 
-  removeItem: async (itemId) => {
+  removeItem: async (id) => {
     set((state) => {
-      const updatedItems = state.items.filter((item) => item.itemId !== itemId);
+      const updatedItems = state.items.filter((item) => item.id !== id);
       const subtotal = calculateSubtotal(updatedItems);
       const total = calculateTotal(subtotal);
 
@@ -141,16 +141,16 @@ export const useCartStore = create<CartStore>()((set, get) => ({
     }
   },
 
-  updateQuantity: async (itemId, quantity) => {
+  updateQuantity: async (id, quantity) => {
     if (quantity <= 0) {
       // Remove item if quantity is 0 or negative
-      await get().removeItem(itemId);
+      await get().removeItem(id);
       return;
     }
 
     set((state) => {
       const updatedItems = state.items.map((item) =>
-        item.itemId === itemId ? { ...item, quantity } : item
+        item.id === id ? { ...item, quantity } : item
       );
       const subtotal = calculateSubtotal(updatedItems);
       const total = calculateTotal(subtotal);
@@ -214,8 +214,8 @@ export const useCartStore = create<CartStore>()((set, get) => ({
     });
   },
 
-  getItemQuantity: (itemId) => {
-    const item = get().items.find((i) => i.itemId === itemId);
+  getItemQuantity: (id) => {
+    const item = get().items.find((i) => i.id === id);
     return item?.quantity || 0;
   },
 
@@ -238,7 +238,7 @@ export const useCartStore = create<CartStore>()((set, get) => ({
 
       set({ isLoading: true });
 
-      // 1. Fetch cart items (itemId + quantity only)
+      // 1. Fetch cart items (id + quantity only)
       const response = await userApi.getCart();
       const cartItems = response.items;
 
@@ -257,7 +257,7 @@ export const useCartStore = create<CartStore>()((set, get) => ({
       // 2. Fetch first menu item to get restaurantId
       const { restaurantApi } = await import("@/services");
       const firstMenuItem = await restaurantApi.getMenuItem(
-        cartItems[0].itemId
+        cartItems[0].id
       );
       const restaurantId = firstMenuItem.restaurantId;
 
@@ -267,11 +267,11 @@ export const useCartStore = create<CartStore>()((set, get) => ({
       // 4. Build full cart items with prices
       // Keep unavailable items but mark them
       const fullCartItems = cartItems.map((cartItem) => {
-        const menuItem = menuItems.find((m) => m.itemId === cartItem.itemId);
+        const menuItem = menuItems.find((m) => m.id === cartItem.id);
         if (!menuItem) {
           // Item no longer exists - mark as unavailable
           return {
-            itemId: cartItem.itemId,
+            id: cartItem.id,
             restaurantId: restaurantId,
             name: "Item no longer available",
             price: 0,
@@ -281,7 +281,7 @@ export const useCartStore = create<CartStore>()((set, get) => ({
         }
 
         return {
-          itemId: cartItem.itemId,
+          id: cartItem.id,
           restaurantId: menuItem.restaurantId,
           name: menuItem.name,
           price: menuItem.price,
@@ -331,10 +331,10 @@ export const useCartStore = create<CartStore>()((set, get) => ({
       set({ isUpdating: true });
 
       const state = get();
-      // Send only itemId + quantity to backend
+      // Send only id + quantity to backend
       await userApi.updateCart(
         state.items.map((item) => ({
-          itemId: item.itemId,
+          id: item.id,
           quantity: item.quantity,
         }))
       );
@@ -353,10 +353,10 @@ export const useCartStore = create<CartStore>()((set, get) => ({
       const state = get();
       if (state.items.length === 0) return;
 
-      // Save current localStorage cart to DB (only itemId + quantity)
+      // Save current localStorage cart to DB (only id + quantity)
       await userApi.updateCart(
         state.items.map((item) => ({
-          itemId: item.itemId,
+          id: item.id,
           quantity: item.quantity,
         }))
       );

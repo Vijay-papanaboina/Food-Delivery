@@ -45,7 +45,7 @@ export function transformMenuItem(item) {
   const i = item.toObject ? item.toObject() : item;
   return {
     ...i,
-    itemId: i.id, // Frontend expects itemId
+    id: i.id,
     restaurantId: i.restaurantId?.toString(),
   };
 }

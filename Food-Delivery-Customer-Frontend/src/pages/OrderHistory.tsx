@@ -146,7 +146,7 @@ export default function OrderHistory() {
       ) : (
         <div className="space-y-4">
           {orders.map((order) => (
-            <OrderCard key={order.orderId} order={order} />
+            <OrderCard key={order.id} order={order} />
           ))}
         </div>
       )}
@@ -156,10 +156,10 @@ export default function OrderHistory() {
 
 interface OrderCardProps {
   order: {
-    orderId: string;
+    id: string;
     restaurantId: string;
     items: Array<{
-      itemId: string;
+      id: string;
       quantity: number;
       price: number;
     }>;
@@ -216,7 +216,7 @@ function OrderCard({ order }: OrderCardProps) {
         <div className="flex items-start justify-between">
           <div className="flex-1">
             <div className="flex items-center justify-between mb-2">
-              <h3 className="text-lg font-semibold">Order #{order.orderId}</h3>
+              <h3 className="text-lg font-semibold">Order #{order.id}</h3>
               <Badge className={getStatusColor(order.status)}>
                 {getStatusLabel(order.status)}
               </Badge>
@@ -268,7 +268,7 @@ function OrderCard({ order }: OrderCardProps) {
 
           <div className="ml-6 flex flex-col space-y-2">
             <Button asChild>
-              <Link to={`/orders/${order.orderId}`}>
+              <Link to={`/orders/${order.id}`}>
                 <Eye className="h-4 w-4 mr-2" />
                 Track Order
               </Link>

@@ -29,7 +29,7 @@ export default function Checkout() {
 
   // Check if any items are missing required fields
   const hasInvalidItems = items.some(
-    (item) => !item.itemId || !item.restaurantId || !item.name || !item.price
+    (item) => !item.id || !item.restaurantId || !item.name || !item.price
   );
 
   // Prevent concurrent order placement
@@ -151,7 +151,7 @@ export default function Checkout() {
       const orderResult = await orderApi.createOrder({
         restaurantId: restaurantId!,
         items: items.map((item) => ({
-          itemId: item.itemId,
+          itemId: item.id,
           quantity: item.quantity,
           price: item.price,
         })),
@@ -409,7 +409,7 @@ export default function Checkout() {
               <div className="space-y-3">
                 {items.map((item) => (
                   <div
-                    key={item.itemId}
+                    key={item.id}
                     className="flex justify-between items-center"
                   >
                     <div className="flex-1">

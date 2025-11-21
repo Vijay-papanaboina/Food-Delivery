@@ -49,7 +49,7 @@ export const DeliveryHistory = () => {
                 </TableHeader>
                 <TableBody>
                   {data.deliveries.map((delivery) => (
-                    <TableRow key={delivery.deliveryId}>
+                    <TableRow key={delivery.id}>
                       <TableCell className="font-medium">
                         #{delivery.orderId.slice(0, 8)}
                       </TableCell>

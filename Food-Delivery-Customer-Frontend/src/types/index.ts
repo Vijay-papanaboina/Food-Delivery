@@ -1,6 +1,6 @@
 // Restaurant types
 export interface Restaurant {
-  restaurantId: string;
+  id: string;
   name: string;
   cuisine: string;
   address: string;
@@ -16,7 +16,7 @@ export interface Restaurant {
 
 // Menu item types
 export interface MenuItem {
-  itemId: string;
+  id: string;
   restaurantId: string;
   name: string;
   description: string;
@@ -30,7 +30,7 @@ export interface MenuItem {
 
 // Cart types
 export interface CartItem {
-  itemId: string;
+  id: string;
   restaurantId: string;
   name: string;
   price: number;
@@ -60,7 +60,7 @@ export type OrderStatus =
 export type PaymentStatus = "pending" | "success" | "failed";
 
 export interface OrderItem {
-  itemId: string;
+  id: string;
   quantity: number;
   price: number;
 }
@@ -76,7 +76,7 @@ export interface DeliveryAddress {
 }
 
 export interface Order {
-  orderId: string;
+  id: string;
   restaurantId: string;
   items: OrderItem[];
   userId: string;
@@ -99,7 +99,7 @@ export type PaymentMethod =
   | "crypto";
 
 export interface Payment {
-  paymentId: string;
+  id: string;
   orderId: string;
   amount: number;
   method: PaymentMethod;
@@ -114,7 +114,7 @@ export interface Payment {
 export type DeliveryStatus = "assigned" | "picked_up" | "completed";
 
 export interface Driver {
-  driverId: string;
+  id: string;
   name: string;
   phone: string;
   vehicle: string;
@@ -129,7 +129,7 @@ export interface Driver {
 }
 
 export interface Delivery {
-  deliveryId: string;
+  id: string;
   orderId: string;
   driverId: string;
   driverName: string;

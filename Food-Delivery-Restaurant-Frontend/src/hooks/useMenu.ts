@@ -11,7 +11,7 @@ export const useMyRestaurant = () => {
 
 export const useMenuItems = () => {
   const { data: restaurantData } = useMyRestaurant();
-  const restaurantId = restaurantData?.restaurant?.restaurantId;
+  const restaurantId = restaurantData?.restaurant?.id;
 
   return useQuery({
     queryKey: ["menu-items", restaurantId],
@@ -22,20 +22,20 @@ export const useMenuItems = () => {
 
 export const useToggleAvailability = () => {
   const { data: restaurantData } = useMyRestaurant();
-  const restaurantId = restaurantData?.restaurant?.restaurantId;
+  const restaurantId = restaurantData?.restaurant?.id;
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: ({
-      itemId,
+      id,
       isAvailable,
     }: {
-      itemId: string;
+      id: string;
       isAvailable: boolean;
     }) =>
       restaurantApi.updateMenuItemAvailability(
         restaurantId!,
-        itemId,
+        id,
         isAvailable
       ),
     onSuccess: (_, variables) => {
@@ -54,7 +54,7 @@ export const useToggleAvailability = () => {
 
 export const useAddMenuItem = () => {
   const { data: restaurantData } = useMyRestaurant();
-  const restaurantId = restaurantData?.restaurant?.restaurantId;
+  const restaurantId = restaurantData?.restaurant?.id;
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -72,17 +72,17 @@ export const useAddMenuItem = () => {
 
 export const useUpdateMenuItem = () => {
   const { data: restaurantData } = useMyRestaurant();
-  const restaurantId = restaurantData?.restaurant?.restaurantId;
+  const restaurantId = restaurantData?.restaurant?.id;
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: ({
-      itemId,
+      id,
       itemData,
     }: {
-      itemId: string;
+      id: string;
       itemData: Partial<import("@/types").MenuItem>;
-    }) => restaurantApi.updateMenuItem(restaurantId!, itemId, itemData),
+    }) => restaurantApi.updateMenuItem(restaurantId!, id, itemData),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["menu-items"] });
       toast.success("Menu item updated successfully");
@@ -95,12 +95,12 @@ export const useUpdateMenuItem = () => {
 
 export const useDeleteMenuItem = () => {
   const { data: restaurantData } = useMyRestaurant();
-  const restaurantId = restaurantData?.restaurant?.restaurantId;
+  const restaurantId = restaurantData?.restaurant?.id;
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (itemId: string) =>
-      restaurantApi.deleteMenuItem(restaurantId!, itemId),
+    mutationFn: (id: string) =>
+      restaurantApi.deleteMenuItem(restaurantId!, id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["menu-items"] });
       toast.success("Menu item deleted successfully");

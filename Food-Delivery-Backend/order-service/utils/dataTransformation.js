@@ -34,7 +34,7 @@ export const transformOrderItem = (item) => {
   if (!item) return null;
 
   return {
-    itemId: item.itemId,
+    id: item.itemId,
     quantity: item.quantity,
     price: item.price,
     name: item.name,

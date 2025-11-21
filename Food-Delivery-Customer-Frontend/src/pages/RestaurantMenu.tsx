@@ -45,7 +45,7 @@ export default function RestaurantMenu() {
   // Set restaurant in cart when component mounts
   React.useEffect(() => {
     if (restaurant) {
-      setRestaurant(restaurant.restaurant.restaurantId);
+      setRestaurant(restaurant.restaurant.id);
     }
   }, [restaurant, setRestaurant]);
 
@@ -62,9 +62,9 @@ export default function RestaurantMenu() {
 
     for (let i = 0; i < quantity; i++) {
       await addItem({
-        itemId: selectedItem.itemId,
+        id: selectedItem.id,
         restaurantId:
-          restaurant?.restaurant.restaurantId || selectedItem.restaurantId,
+          restaurant?.restaurant.id || selectedItem.restaurantId,
         name: selectedItem.name,
         price: selectedItem.price,
       });
@@ -201,7 +201,7 @@ export default function RestaurantMenu() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {menuItems.map((item) => (
                 <MenuItemCard
-                  key={item.itemId}
+                  key={item.id}
                   item={item}
                   onSelect={setSelectedItem}
                   getQuantity={getItemQuantity}
@@ -297,7 +297,7 @@ export default function RestaurantMenu() {
 interface MenuItemCardProps {
   item: MenuItem;
   onSelect: (item: MenuItem) => void;
-  getQuantity: (itemId: string) => number;
+  getQuantity: (id: string) => number;
   isRestaurantOpen: boolean;
 }
 
@@ -307,7 +307,7 @@ function MenuItemCard({
   getQuantity,
   isRestaurantOpen,
 }: MenuItemCardProps) {
-  const quantity = getQuantity(item.itemId);
+  const quantity = getQuantity(item.id);
   const isItemAvailable = item.isAvailable && isRestaurantOpen;
   const isDisabled = !isItemAvailable;
 

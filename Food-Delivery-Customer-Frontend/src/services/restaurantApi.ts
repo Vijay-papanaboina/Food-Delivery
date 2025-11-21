@@ -72,9 +72,9 @@ export class RestaurantApi extends ApiService {
     return response.menu;
   };
 
-  getMenuItem = async (itemId: string): Promise<MenuItem> => {
+  getMenuItem = async (id: string): Promise<MenuItem> => {
     const result = await this.get<{ message: string; item: MenuItem }>(
-      `/api/restaurant-service/menu-items/${itemId}`
+      `/api/restaurant-service/menu-items/${id}`
     );
 
     return result.item;
@@ -84,9 +84,13 @@ export class RestaurantApi extends ApiService {
     restaurantId: string,
     items: Array<{ id: string; quantity: number }>
   ): Promise<{ valid: boolean; items: MenuItem[]; errors?: string[] }> => {
+    const itemsToSend = items.map(item => ({
+      itemId: item.id,
+      quantity: item.quantity
+    }));
     return this.post<{ valid: boolean; items: MenuItem[]; errors?: string[] }>(
       `/api/restaurant-service/restaurants/${restaurantId}/menu/validate`,
-      { items }
+      { items: itemsToSend }
     );
   };
 }

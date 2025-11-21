@@ -1,6 +1,6 @@
 // User & Auth Types
 export interface User {
-  userId: string;
+  id: string;
   email: string;
   name: string;
   role: "driver";
@@ -31,7 +31,7 @@ export interface BackendUser {
 
 // Delivery Types
 export interface Delivery {
-  deliveryId: string;
+  id: string;
   orderId: string;
   driverId: string;
   driverName?: string;
@@ -63,7 +63,7 @@ export interface Delivery {
 
 // Order Item Types
 export interface OrderItem {
-  itemId: string;
+  id: string;
   name: string;
   quantity: number;
   price: number;
@@ -87,7 +87,7 @@ export interface DriverStats {
 
 // Driver Types
 export interface Driver {
-  driverId: string;
+  id: string;
   userId: string;
   name: string;
   phone: string;

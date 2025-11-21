@@ -86,7 +86,7 @@ export class UserApi extends ApiService {
   };
 
   updateAddress = async (
-    addressId: string,
+    id: string,
     addressData: {
       label?: string;
       street?: string;
@@ -99,7 +99,7 @@ export class UserApi extends ApiService {
     const result = await this.put<{
       message: string;
       address: DeliveryAddress;
-    }>(`/api/user-service/users/addresses/${addressId}`, {
+    }>(`/api/user-service/users/addresses/${id}`, {
       label: addressData.label,
       street: addressData.street,
       city: addressData.city,
@@ -114,9 +114,9 @@ export class UserApi extends ApiService {
     };
   };
 
-  deleteAddress = async (addressId: string): Promise<{ message: string }> => {
+  deleteAddress = async (id: string): Promise<{ message: string }> => {
     const result = await this.delete<{ message: string }>(
-      `/api/user-service/users/addresses/${addressId}`
+      `/api/user-service/users/addresses/${id}`
     );
 
     return result;
@@ -124,32 +124,44 @@ export class UserApi extends ApiService {
 
   getCart = async (): Promise<{
     message: string;
-    items: Array<{ itemId: string; quantity: number }>;
+    items: Array<{ id: string; quantity: number }>;
   }> => {
     logger.info(`[UserAPI] Getting user cart`);
 
     const result = await this.get<{
       message: string;
-      items: Array<{ itemId: string; quantity: number }>;
+      items: Array<{ id: string; itemId: string; quantity: number }>;
     }>("/api/user-service/cart");
 
     logger.info(`[UserAPI] User cart retrieved successfully`, {
       itemCount: result.items.length,
     });
 
-    return result;
+    // Map backend itemId to frontend id
+    return {
+      message: result.message,
+      items: result.items.map(item => ({
+        id: item.itemId,
+        quantity: item.quantity
+      }))
+    };
   };
 
   updateCart = async (
-    items: Array<{ itemId: string; quantity: number }>
+    items: Array<{ id: string; quantity: number }>
   ): Promise<{ message: string }> => {
     logger.info(`[UserAPI] Updating user cart`, {
       itemCount: items.length,
     });
 
+    const itemsToSend = items.map(item => ({
+      itemId: item.id,
+      quantity: item.quantity
+    }));
+
     const result = await this.put<{ message: string }>(
       "/api/user-service/cart",
-      { items }
+      { items: itemsToSend }
     );
 
     return result;
