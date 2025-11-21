@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: kafka-service
+  namespace: food-delivery
+  labels:
+    app: kafka
+spec:
+  type: ClusterIP
+  ports:
+  - port: 9092
+    targetPort: 9092
+    protocol: TCP
+    name: plaintext
+  - port: 29093
+    targetPort: 29093
+    protocol: TCP
+    name: controller
+  selector:
+    app: kafka
+

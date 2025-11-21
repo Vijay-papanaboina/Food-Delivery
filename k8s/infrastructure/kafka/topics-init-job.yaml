@@ -1,0 +1,69 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: kafka-topics-init
+  namespace: food-delivery
+  labels:
+    app: kafka-topics-init
+spec:
+  ttlSecondsAfterFinished: 100
+  template:
+    metadata:
+      labels:
+        app: kafka-topics-init
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: kafka-topics
+          image: confluentinc/cp-kafka:latest
+          command:
+            - /bin/bash
+            - -c
+            - |
+              echo 'Waiting for Kafka to be fully ready...'
+              sleep 30
+
+              echo 'Creating topics for food ordering microservices...'
+
+              # Create order-created topic (3 partitions for high throughput)
+              kafka-topics --create --if-not-exists --bootstrap-server kafka-service:9092 --topic order-created --partitions 3 --replication-factor 1
+
+              # Create payment-processed topic (2 partitions)
+              kafka-topics --create --if-not-exists --bootstrap-server kafka-service:9092 --topic payment-processed --partitions 2 --replication-factor 1
+
+              # Create order-confirmed topic (2 partitions)
+              kafka-topics --create --if-not-exists --bootstrap-server kafka-service:9092 --topic order-confirmed --partitions 2 --replication-factor 1
+
+              # Create food-ready topic (2 partitions)
+              kafka-topics --create --if-not-exists --bootstrap-server kafka-service:9092 --topic food-ready --partitions 2 --replication-factor 1
+
+              # Create delivery-assigned topic (2 partitions)
+              kafka-topics --create --if-not-exists --bootstrap-server kafka-service:9092 --topic delivery-assigned --partitions 2 --replication-factor 1
+
+              # Create delivery-picked-up topic (2 partitions)
+              kafka-topics --create --if-not-exists --bootstrap-server kafka-service:9092 --topic delivery-picked-up --partitions 2 --replication-factor 1
+
+              # Create delivery-completed topic (2 partitions)
+              kafka-topics --create --if-not-exists --bootstrap-server kafka-service:9092 --topic delivery-completed --partitions 2 --replication-factor 1
+
+              # Gig-worker model delivery topics
+              # Create delivery-accepted topic (2 partitions)
+              kafka-topics --create --if-not-exists --bootstrap-server kafka-service:9092 --topic delivery-accepted --partitions 2 --replication-factor 1
+
+              # Create delivery-declined topic (2 partitions)
+              kafka-topics --create --if-not-exists --bootstrap-server kafka-service:9092 --topic delivery-declined --partitions 2 --replication-factor 1
+
+              # Create delivery-reassigned topic (2 partitions)
+              kafka-topics --create --if-not-exists --bootstrap-server kafka-service:9092 --topic delivery-reassigned --partitions 2 --replication-factor 1
+
+              # Create delivery-unassigned topic (1 partition for admin alerts)
+              kafka-topics --create --if-not-exists --bootstrap-server kafka-service:9092 --topic delivery-unassigned --partitions 1 --replication-factor 1
+
+              # Create notifications topic (1 partition for ordered processing)
+              kafka-topics --create --if-not-exists --bootstrap-server kafka-service:9092 --topic notifications --partitions 1 --replication-factor 1
+
+              echo 'All topics created successfully!'
+              echo 'Listing all topics:'
+              kafka-topics --list --bootstrap-server kafka-service:9092
+
+              echo 'Topic creation completed.'

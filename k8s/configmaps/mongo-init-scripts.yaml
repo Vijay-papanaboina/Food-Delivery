@@ -1,0 +1,939 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mongo-init-scripts
+  namespace: food-delivery
+data:
+  init-mongo.js: |
+    
+    print("Starting MongoDB Initialization...");
+    
+    // Initialize User Service
+    print("Seeding User Service...");
+    db = db.getSiblingDB('user_service');
+    try { db.createUser({ user: "app", pwd: "app", roles: [{ role: "readWrite", db: "user_service" }] }); } catch(e) { print("User 'app' already exists"); }
+    db.users.drop();
+    db.users.insertMany([
+      {
+        "_id": ObjectId("65f2d6c0c0c0c0c0c0c0c010"),
+        "email": "john@example.com",
+        "passwordHash": "$2b$12$Wf.sBiug6EB6UZz1UPFJLetiK1xmdz4dZDwMNA8szBAifmkAJ2qcu",
+        "name": "John Doe",
+        "phone": "+1-555-0100",
+        "role": "customer",
+        "isActive": true,
+        "addresses": [
+          {
+            "_id": ObjectId("65f2d6c0c0c0c0c0c0c0c301"),
+            "label": "Home",
+            "street": "123 Oak Street",
+            "city": "New York",
+            "state": "NY",
+            "zipCode": "10001",
+            "isDefault": true
+          },
+          {
+            "_id": ObjectId("65f2d6c0c0c0c0c0c0c0c302"),
+            "label": "Work",
+            "street": "456 Business Ave",
+            "city": "New York",
+            "state": "NY",
+            "zipCode": "10002",
+            "isDefault": false
+          }
+        ],
+        "cart": []
+      },
+      {
+        "_id": ObjectId("65f2d6c0c0c0c0c0c0c0c011"),
+        "email": "jane@example.com",
+        "passwordHash": "$2b$12$Wf.sBiug6EB6UZz1UPFJLetiK1xmdz4dZDwMNA8szBAifmkAJ2qcu",
+        "name": "Jane Smith",
+        "phone": "+1-555-0101",
+        "role": "customer",
+        "isActive": true,
+        "addresses": [
+          {
+            "_id": ObjectId("65f2d6c0c0c0c0c0c0c0c303"),
+            "label": "Home",
+            "street": "789 Pine Street",
+            "city": "Brooklyn",
+            "state": "NY",
+            "zipCode": "11201",
+            "isDefault": true
+          },
+          {
+            "_id": ObjectId("65f2d6c0c0c0c0c0c0c0c304"),
+            "label": "Apartment",
+            "street": "321 Maple Drive",
+            "city": "Queens",
+            "state": "NY",
+            "zipCode": "11375",
+            "isDefault": false
+          }
+        ],
+        "cart": []
+      },
+      {
+        "_id": ObjectId("65f2d6c0c0c0c0c0c0c0c100"),
+        "email": "mario@pizzapalace.com",
+        "passwordHash": "$2b$12$Wf.sBiug6EB6UZz1UPFJLetiK1xmdz4dZDwMNA8szBAifmkAJ2qcu",
+        "name": "Mario Rossi",
+        "phone": "+1-555-0123",
+        "role": "restaurant",
+        "isActive": true
+      },
+      {
+        "_id": ObjectId("65f2d6c0c0c0c0c0c0c0c101"),
+        "email": "burger@junction.com",
+        "passwordHash": "$2b$12$Wf.sBiug6EB6UZz1UPFJLetiK1xmdz4dZDwMNA8szBAifmkAJ2qcu",
+        "name": "Burger Master",
+        "phone": "+1-555-0456",
+        "role": "restaurant",
+        "isActive": true
+      },
+      {
+        "_id": ObjectId("65f2d6c0c0c0c0c0c0c0c102"),
+        "email": "thai@garden.com",
+        "passwordHash": "$2b$12$Wf.sBiug6EB6UZz1UPFJLetiK1xmdz4dZDwMNA8szBAifmkAJ2qcu",
+        "name": "Thai Chef",
+        "phone": "+1-555-0789",
+        "role": "restaurant",
+        "isActive": true
+      },
+      {
+        "_id": ObjectId("65f2d6c0c0c0c0c0c0c0c103"),
+        "email": "golden@wok.com",
+        "passwordHash": "$2b$12$Wf.sBiug6EB6UZz1UPFJLetiK1xmdz4dZDwMNA8szBAifmkAJ2qcu",
+        "name": "Wok Master",
+        "phone": "+1-555-1010",
+        "role": "restaurant",
+        "isActive": true
+      },
+      {
+        "_id": ObjectId("65f2d6c0c0c0c0c0c0c0c104"),
+        "email": "sushi@express.com",
+        "passwordHash": "$2b$12$Wf.sBiug6EB6UZz1UPFJLetiK1xmdz4dZDwMNA8szBAifmkAJ2qcu",
+        "name": "Sushi Chef",
+        "phone": "+1-555-2121",
+        "role": "restaurant",
+        "isActive": true
+      },
+      {
+        "_id": ObjectId("65f2d6c0c0c0c0c0c0c0c105"),
+        "email": "taco@fiesta.com",
+        "passwordHash": "$2b$12$Wf.sBiug6EB6UZz1UPFJLetiK1xmdz4dZDwMNA8szBAifmkAJ2qcu",
+        "name": "Taco Master",
+        "phone": "+1-555-3333",
+        "role": "restaurant",
+        "isActive": true
+      },
+      {
+        "_id": ObjectId("65f2d6c0c0c0c0c0c0c0c106"),
+        "email": "curry@house.com",
+        "passwordHash": "$2b$12$Wf.sBiug6EB6UZz1UPFJLetiK1xmdz4dZDwMNA8szBAifmkAJ2qcu",
+        "name": "Curry Master",
+        "phone": "+1-555-4444",
+        "role": "restaurant",
+        "isActive": true
+      },
+      {
+        "_id": ObjectId("65f2d6c0c0c0c0c0c0c0c107"),
+        "email": "bistro@petit.com",
+        "passwordHash": "$2b$12$Wf.sBiug6EB6UZz1UPFJLetiK1xmdz4dZDwMNA8szBAifmkAJ2qcu",
+        "name": "French Chef",
+        "phone": "+1-555-5555",
+        "role": "restaurant",
+        "isActive": true
+      },
+      {
+        "_id": ObjectId("65f2d6c0c0c0c0c0c0c0c108"),
+        "email": "green@leaf.com",
+        "passwordHash": "$2b$12$Wf.sBiug6EB6UZz1UPFJLetiK1xmdz4dZDwMNA8szBAifmkAJ2qcu",
+        "name": "Green Chef",
+        "phone": "+1-555-6666",
+        "role": "restaurant",
+        "isActive": true
+      },
+      {
+        "_id": ObjectId("65f2d6c0c0c0c0c0c0c0c109"),
+        "email": "bbq@smoky.com",
+        "passwordHash": "$2b$12$Wf.sBiug6EB6UZz1UPFJLetiK1xmdz4dZDwMNA8szBAifmkAJ2qcu",
+        "name": "BBQ Master",
+        "phone": "+1-555-7777",
+        "role": "restaurant",
+        "isActive": true
+      },
+      {
+        "_id": ObjectId("65f2d6c0c0c0c0c0c0c0c110"),
+        "email": "mediterranean@delight.com",
+        "passwordHash": "$2b$12$Wf.sBiug6EB6UZz1UPFJLetiK1xmdz4dZDwMNA8szBAifmkAJ2qcu",
+        "name": "Mediterranean Chef",
+        "phone": "+1-555-8888",
+        "role": "restaurant",
+        "isActive": true
+      },
+      {
+        "_id": ObjectId("65f2d6c0c0c0c0c0c0c0c111"),
+        "email": "breakfast@nook.com",
+        "passwordHash": "$2b$12$Wf.sBiug6EB6UZz1UPFJLetiK1xmdz4dZDwMNA8szBAifmkAJ2qcu",
+        "name": "Breakfast Chef",
+        "phone": "+1-555-9999",
+        "role": "restaurant",
+        "isActive": true
+      },
+      {
+        "_id": ObjectId("65f2d6c0c0c0c0c0c0c0c112"),
+        "email": "pho@kingdom.com",
+        "passwordHash": "$2b$12$Wf.sBiug6EB6UZz1UPFJLetiK1xmdz4dZDwMNA8szBAifmkAJ2qcu",
+        "name": "Pho Master",
+        "phone": "+1-555-1111",
+        "role": "restaurant",
+        "isActive": true
+      },
+      {
+        "_id": ObjectId("65f2d6c0c0c0c0c0c0c0c113"),
+        "email": "seoul@food.com",
+        "passwordHash": "$2b$12$Wf.sBiug6EB6UZz1UPFJLetiK1xmdz4dZDwMNA8szBAifmkAJ2qcu",
+        "name": "Korean Chef",
+        "phone": "+1-555-2222",
+        "role": "restaurant",
+        "isActive": true
+      },
+      {
+        "_id": ObjectId("65f2d6c0c0c0c0c0c0c0c114"),
+        "email": "sweet@spot.com",
+        "passwordHash": "$2b$12$Wf.sBiug6EB6UZz1UPFJLetiK1xmdz4dZDwMNA8szBAifmkAJ2qcu",
+        "name": "Dessert Master",
+        "phone": "+1-555-3330",
+        "role": "restaurant",
+        "isActive": true
+      },
+      {
+        "_id": ObjectId("65f2d6c0c0c0c0c0c0c0c200"),
+        "email": "john.smith@driver.com",
+        "passwordHash": "$2b$12$Wf.sBiug6EB6UZz1UPFJLetiK1xmdz4dZDwMNA8szBAifmkAJ2qcu",
+        "name": "John Smith",
+        "phone": "+1-555-1001",
+        "role": "driver",
+        "isActive": true
+      },
+      {
+        "_id": ObjectId("65f2d6c0c0c0c0c0c0c0c201"),
+        "email": "sarah.johnson@driver.com",
+        "passwordHash": "$2b$12$Wf.sBiug6EB6UZz1UPFJLetiK1xmdz4dZDwMNA8szBAifmkAJ2qcu",
+        "name": "Sarah Johnson",
+        "phone": "+1-555-1002",
+        "role": "driver",
+        "isActive": true
+      },
+      {
+        "_id": ObjectId("65f2d6c0c0c0c0c0c0c0c202"),
+        "email": "mike.davis@driver.com",
+        "passwordHash": "$2b$12$Wf.sBiug6EB6UZz1UPFJLetiK1xmdz4dZDwMNA8szBAifmkAJ2qcu",
+        "name": "Mike Davis",
+        "phone": "+1-555-1003",
+        "role": "driver",
+        "isActive": true
+      },
+      {
+        "_id": ObjectId("65f2d6c0c0c0c0c0c0c0c203"),
+        "email": "emily.wilson@driver.com",
+        "passwordHash": "$2b$12$Wf.sBiug6EB6UZz1UPFJLetiK1xmdz4dZDwMNA8szBAifmkAJ2qcu",
+        "name": "Emily Wilson",
+        "phone": "+1-555-1004",
+        "role": "driver",
+        "isActive": true
+      },
+      {
+        "_id": ObjectId("65f2d6c0c0c0c0c0c0c0c204"),
+        "email": "alex.brown@driver.com",
+        "passwordHash": "$2b$12$Wf.sBiug6EB6UZz1UPFJLetiK1xmdz4dZDwMNA8szBAifmkAJ2qcu",
+        "name": "Alex Brown",
+        "phone": "+1-555-1005",
+        "role": "driver",
+        "isActive": true
+      }
+    ]);
+    print("User Service Seeded.");
+    
+    // Initialize Restaurant Service
+    print("Seeding Restaurant Service...");
+    db = db.getSiblingDB('restaurant_service');
+    try { db.createUser({ user: "app", pwd: "app", roles: [{ role: "readWrite", db: "restaurant_service" }] }); } catch(e) { print("User 'app' already exists"); }
+    db.restaurants.drop();
+    db.restaurants.insertMany([
+      {
+        "_id": ObjectId("65f2d6c0c0c0c0c0c0c0c001"),
+        "ownerId": ObjectId("65f2d6c0c0c0c0c0c0c0c100"),
+        "name": "Mario's Pizza Palace",
+        "cuisine": "Italian",
+        "address": "123 Main St, Downtown",
+        "phone": "+1-555-0123",
+        "rating": 4.5,
+        "deliveryTime": "25-35 min",
+        "deliveryFee": 2.99,
+        "isOpen": true,
+        "openingTime": "11:00",
+        "closingTime": "22:00",
+        "isActive": true,
+        "imageUrl": "https://images.unsplash.com/photo-1579751626657-72bc17010498?w=800"
+      },
+      {
+        "_id": ObjectId("65f2d6c0c0c0c0c0c0c0c002"),
+        "ownerId": ObjectId("65f2d6c0c0c0c0c0c0c0c101"),
+        "name": "Burger Junction",
+        "cuisine": "American",
+        "address": "456 Oak Ave, Midtown",
+        "phone": "+1-555-0456",
+        "rating": 4.2,
+        "deliveryTime": "20-30 min",
+        "deliveryFee": 1.99,
+        "isOpen": true,
+        "openingTime": "10:00",
+        "closingTime": "23:00",
+        "isActive": true,
+        "imageUrl": "https://images.unsplash.com/photo-1550547660-d9450f859349?w=800"
+      },
+      {
+        "_id": ObjectId("65f2d6c0c0c0c0c0c0c0c003"),
+        "ownerId": ObjectId("65f2d6c0c0c0c0c0c0c0c102"),
+        "name": "Thai Garden",
+        "cuisine": "Thai",
+        "address": "789 Pine St, Uptown",
+        "phone": "+1-555-0789",
+        "rating": 4.7,
+        "deliveryTime": "30-40 min",
+        "deliveryFee": 3.49,
+        "isOpen": true,
+        "openingTime": "12:00",
+        "closingTime": "21:00",
+        "isActive": true,
+        "imageUrl": "https://images.unsplash.com/photo-1559339352-11d035aa65de?w=800"
+      },
+      {
+        "_id": ObjectId("65f2d6c0c0c0c0c0c0c0c004"),
+        "ownerId": ObjectId("65f2d6c0c0c0c0c0c0c0c103"),
+        "name": "The Golden Wok",
+        "cuisine": "Chinese",
+        "address": "101 Maple Dr, Suburbia",
+        "phone": "+1-555-1010",
+        "rating": 4.4,
+        "deliveryTime": "35-45 min",
+        "deliveryFee": 2.49,
+        "isOpen": true,
+        "openingTime": "11:30",
+        "closingTime": "21:30",
+        "isActive": true,
+        "imageUrl": "https://images.unsplash.com/photo-1526318472351-c75fcf070305?w=800"
+      },
+      {
+        "_id": ObjectId("65f2d6c0c0c0c0c0c0c0c005"),
+        "ownerId": ObjectId("65f2d6c0c0c0c0c0c0c0c104"),
+        "name": "Sushi Express",
+        "cuisine": "Japanese",
+        "address": "212 Birch Rd, Lakeside",
+        "phone": "+1-555-2121",
+        "rating": 4.8,
+        "deliveryTime": "40-50 min",
+        "deliveryFee": 4.99,
+        "isOpen": true,
+        "openingTime": "12:00",
+        "closingTime": "22:00",
+        "isActive": true,
+        "imageUrl": "https://images.unsplash.com/photo-1579584425555-c3ce17fd4351?w=800"
+      },
+      {
+        "_id": ObjectId("65f2d6c0c0c0c0c0c0c0c006"),
+        "ownerId": ObjectId("65f2d6c0c0c0c0c0c0c0c105"),
+        "name": "Taco Fiesta",
+        "cuisine": "Mexican",
+        "address": "333 Cedar Blvd, West End",
+        "phone": "+1-555-3333",
+        "rating": 4.6,
+        "deliveryTime": "20-25 min",
+        "deliveryFee": 1.49,
+        "isOpen": true,
+        "openingTime": "11:00",
+        "closingTime": "23:00",
+        "isActive": true,
+        "imageUrl": "https://images.unsplash.com/photo-1565299585323-38d6b0865b47?w=800"
+      },
+      {
+        "_id": ObjectId("65f2d6c0c0c0c0c0c0c0c007"),
+        "ownerId": ObjectId("65f2d6c0c0c0c0c0c0c0c106"),
+        "name": "The Curry House",
+        "cuisine": "Indian",
+        "address": "444 Spruce Ave, Eastville",
+        "phone": "+1-555-4444",
+        "rating": 4.9,
+        "deliveryTime": "45-55 min",
+        "deliveryFee": 3.99,
+        "isOpen": true,
+        "openingTime": "17:00",
+        "closingTime": "22:00",
+        "isActive": true,
+        "imageUrl": "https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=800"
+      },
+      {
+        "_id": ObjectId("65f2d6c0c0c0c0c0c0c0c008"),
+        "ownerId": ObjectId("65f2d6c0c0c0c0c0c0c0c107"),
+        "name": "Le Petit Bistro",
+        "cuisine": "French",
+        "address": "555 Willow Ln, Old Town",
+        "phone": "+1-555-5555",
+        "rating": 4.3,
+        "deliveryTime": "50-60 min",
+        "deliveryFee": 5.99,
+        "isOpen": false,
+        "openingTime": "18:00",
+        "closingTime": "23:00",
+        "isActive": true,
+        "imageUrl": "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800"
+      },
+      {
+        "_id": ObjectId("65f2d6c0c0c0c0c0c0c0c009"),
+        "ownerId": ObjectId("65f2d6c0c0c0c0c0c0c0c108"),
+        "name": "The Green Leaf",
+        "cuisine": "Vegan",
+        "address": "666 Elm St, Greenfield",
+        "phone": "+1-555-6666",
+        "rating": 4.7,
+        "deliveryTime": "25-35 min",
+        "deliveryFee": 2.99,
+        "isOpen": true,
+        "openingTime": "11:00",
+        "closingTime": "20:00",
+        "isActive": true,
+        "imageUrl": "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=800"
+      },
+      {
+        "_id": ObjectId("65f2d6c0c0c0c0c0c0c0c00a"),
+        "ownerId": ObjectId("65f2d6c0c0c0c0c0c0c0c109"),
+        "name": "Smoky Barrel BBQ",
+        "cuisine": "BBQ",
+        "address": "777 Hickory Rd, Riverside",
+        "phone": "+1-555-7777",
+        "rating": 4.5,
+        "deliveryTime": "30-40 min",
+        "deliveryFee": 3.49,
+        "isOpen": true,
+        "openingTime": "12:00",
+        "closingTime": "21:00",
+        "isActive": true,
+        "imageUrl": "https://images.unsplash.com/photo-1529193591184-b1d58069ecdd?w=800"
+      },
+      {
+        "_id": ObjectId("65f2d6c0c0c0c0c0c0c0c00b"),
+        "ownerId": ObjectId("65f2d6c0c0c0c0c0c0c0c110"),
+        "name": "Mediterranean Delight",
+        "cuisine": "Mediterranean",
+        "address": "888 Olive Grove, Hilltop",
+        "phone": "+1-555-8888",
+        "rating": 4.6,
+        "deliveryTime": "35-45 min",
+        "deliveryFee": 2.99,
+        "isOpen": true,
+        "openingTime": "11:30",
+        "closingTime": "22:30",
+        "isActive": true,
+        "imageUrl": "https://images.unsplash.com/photo-1544025162-d76694265947?w=800"
+      },
+      {
+        "_id": ObjectId("65f2d6c0c0c0c0c0c0c0c00c"),
+        "ownerId": ObjectId("65f2d6c0c0c0c0c0c0c0c111"),
+        "name": "The Breakfast Nook",
+        "cuisine": "Breakfast",
+        "address": "999 Sunrise Ct, Morningside",
+        "phone": "+1-555-9999",
+        "rating": 4.8,
+        "deliveryTime": "15-25 min",
+        "deliveryFee": 1.99,
+        "isOpen": true,
+        "openingTime": "07:00",
+        "closingTime": "14:00",
+        "isActive": true,
+        "imageUrl": "https://images.unsplash.com/photo-1533089860892-a7c6f0a88666?w=800"
+      },
+      {
+        "_id": ObjectId("65f2d6c0c0c0c0c0c0c0c00d"),
+        "ownerId": ObjectId("65f2d6c0c0c0c0c0c0c0c112"),
+        "name": "Pho Kingdom",
+        "cuisine": "Vietnamese",
+        "address": "111 Lotus St, Little Saigon",
+        "phone": "+1-555-1111",
+        "rating": 4.7,
+        "deliveryTime": "30-40 min",
+        "deliveryFee": 2.49,
+        "isOpen": true,
+        "openingTime": "11:00",
+        "closingTime": "21:00",
+        "isActive": true,
+        "imageUrl": "https://images.unsplash.com/photo-1582878826629-29b7ad1cdc43?w=800"
+      },
+      {
+        "_id": ObjectId("65f2d6c0c0c0c0c0c0c0c00e"),
+        "ownerId": ObjectId("65f2d6c0c0c0c0c0c0c0c113"),
+        "name": "Seoul Food",
+        "cuisine": "Korean",
+        "address": "222 Kimchi Ave, Koreatown",
+        "phone": "+1-555-2222",
+        "rating": 4.6,
+        "deliveryTime": "35-45 min",
+        "deliveryFee": 3.99,
+        "isOpen": true,
+        "openingTime": "12:00",
+        "closingTime": "22:00",
+        "isActive": true,
+        "imageUrl": "https://images.unsplash.com/photo-1498837167922-ddd27525d352?w=800"
+      },
+      {
+        "_id": ObjectId("65f2d6c0c0c0c0c0c0c0c00f"),
+        "ownerId": ObjectId("65f2d6c0c0c0c0c0c0c0c114"),
+        "name": "The Sweet Spot",
+        "cuisine": "Desserts",
+        "address": "333 Sugar Lane, Sweetwater",
+        "phone": "+1-555-3330",
+        "rating": 4.9,
+        "deliveryTime": "20-30 min",
+        "deliveryFee": 1.99,
+        "isOpen": true,
+        "openingTime": "13:00",
+        "closingTime": "23:00",
+        "isActive": true,
+        "imageUrl": "https://images.unsplash.com/photo-1488477181946-6428a0291777?w=800"
+      }
+    ]);
+    db.menuitems.drop();
+    db.menuitems.insertMany([
+      {
+        "_id": ObjectId("65f2d6c1c0c0c0c0c0c0c101"),
+        "restaurantId": ObjectId("65f2d6c0c0c0c0c0c0c0c001"),
+        "name": "Margherita Pizza",
+        "description": "Fresh mozzarella, tomato sauce, and basil",
+        "price": 12.99,
+        "category": "pizza",
+        "isAvailable": true,
+        "preparationTime": 15,
+        "imageUrl": "https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=500"
+      },
+      {
+        "_id": ObjectId("65f2d6c1c0c0c0c0c0c0c102"),
+        "restaurantId": ObjectId("65f2d6c0c0c0c0c0c0c0c001"),
+        "name": "Pepperoni Pizza",
+        "description": "Classic pepperoni with mozzarella and tomato sauce",
+        "price": 14.99,
+        "category": "pizza",
+        "isAvailable": true,
+        "preparationTime": 15,
+        "imageUrl": "https://images.unsplash.com/photo-1628840042765-356cda07504e?w=500"
+      },
+      {
+        "_id": ObjectId("65f2d6c1c0c0c0c0c0c0c103"),
+        "restaurantId": ObjectId("65f2d6c0c0c0c0c0c0c0c001"),
+        "name": "Caesar Salad",
+        "description": "Fresh romaine lettuce, croutons, parmesan cheese",
+        "price": 8.99,
+        "category": "salad",
+        "isAvailable": true,
+        "preparationTime": 10,
+        "imageUrl": "https://images.unsplash.com/photo-1546793665-c74683f339c1?w=500"
+      },
+      {
+        "_id": ObjectId("65f2d6c1c0c0c0c0c0c0c104"),
+        "restaurantId": ObjectId("65f2d6c0c0c0c0c0c0c0c002"),
+        "name": "Classic Burger",
+        "description": "Beef patty, lettuce, tomato, onion, special sauce",
+        "price": 9.99,
+        "category": "burger",
+        "isAvailable": true,
+        "preparationTime": 12,
+        "imageUrl": "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=500"
+      },
+      {
+        "_id": ObjectId("65f2d6c1c0c0c0c0c0c0c105"),
+        "restaurantId": ObjectId("65f2d6c0c0c0c0c0c0c0c002"),
+        "name": "Bacon Cheeseburger",
+        "description": "Beef patty, bacon, cheese, lettuce, tomato",
+        "price": 11.99,
+        "category": "burger",
+        "isAvailable": true,
+        "preparationTime": 15,
+        "imageUrl": "https://images.unsplash.com/photo-1553979459-d2229ba7433b?w=500"
+      },
+      {
+        "_id": ObjectId("65f2d6c1c0c0c0c0c0c0c106"),
+        "restaurantId": ObjectId("65f2d6c0c0c0c0c0c0c0c002"),
+        "name": "French Fries",
+        "description": "Crispy golden fries with sea salt",
+        "price": 4.99,
+        "category": "sides",
+        "isAvailable": true,
+        "preparationTime": 8,
+        "imageUrl": "https://images.unsplash.com/photo-1573080496219-bb080dd4f877?w=500"
+      },
+      {
+        "_id": ObjectId("65f2d6c1c0c0c0c0c0c0c107"),
+        "restaurantId": ObjectId("65f2d6c0c0c0c0c0c0c0c003"),
+        "name": "Pad Thai",
+        "description": "Stir-fried rice noodles with shrimp, tofu, and peanuts",
+        "price": 13.99,
+        "category": "noodles",
+        "isAvailable": true,
+        "preparationTime": 20,
+        "imageUrl": "https://images.unsplash.com/photo-1559314809-0d155014e29e?w=500"
+      },
+      {
+        "_id": ObjectId("65f2d6c1c0c0c0c0c0c0c108"),
+        "restaurantId": ObjectId("65f2d6c0c0c0c0c0c0c0c003"),
+        "name": "Green Curry",
+        "description": "Spicy green curry with chicken and vegetables",
+        "price": 14.99,
+        "category": "curry",
+        "isAvailable": true,
+        "preparationTime": 18,
+        "imageUrl": "https://images.unsplash.com/photo-1455619452474-d2be8b1e70cd?w=500"
+      },
+      {
+        "_id": ObjectId("65f2d6c1c0c0c0c0c0c0c120"),
+        "restaurantId": ObjectId("65f2d6c0c0c0c0c0c0c0c007"),
+        "name": "Chicken Tikka Masala",
+        "description": "Grilled chicken chunks in spicy curry sauce",
+        "price": 14.99,
+        "category": "curry",
+        "isAvailable": true,
+        "preparationTime": 25,
+        "imageUrl": "https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=500"
+      },
+      {
+        "_id": ObjectId("65f2d6c1c0c0c0c0c0c0c121"),
+        "restaurantId": ObjectId("65f2d6c0c0c0c0c0c0c0c007"),
+        "name": "Garlic Naan",
+        "description": "Oven-baked flatbread with garlic and butter",
+        "price": 3.99,
+        "category": "bread",
+        "isAvailable": true,
+        "preparationTime": 10,
+        "imageUrl": "https://images.unsplash.com/photo-1601050690597-df0568f70950?w=500"
+      },
+      {
+        "_id": ObjectId("65f2d6c1c0c0c0c0c0c0c122"),
+        "restaurantId": ObjectId("65f2d6c0c0c0c0c0c0c0c007"),
+        "name": "Vegetable Samosas",
+        "description": "Crispy pastry filled with spiced potatoes and peas",
+        "price": 5.99,
+        "category": "appetizer",
+        "isAvailable": true,
+        "preparationTime": 15,
+        "imageUrl": "https://images.unsplash.com/photo-1601050690597-df0568f70950?w=500"
+      },
+      {
+        "_id": ObjectId("65f2d6c1c0c0c0c0c0c0c109"),
+        "restaurantId": ObjectId("65f2d6c0c0c0c0c0c0c0c003"),
+        "name": "Spring Rolls",
+        "description": "Fresh vegetables wrapped in rice paper",
+        "price": 6.99,
+        "category": "appetizer",
+        "isAvailable": true,
+        "preparationTime": 10,
+        "imageUrl": "https://images.unsplash.com/photo-1594007653729-c5b5ddfe77c9?w=500"
+      },
+      {
+        "_id": ObjectId("65f2d6c1c0c0c0c0c0c0c131"),
+        "restaurantId": ObjectId("65f2d6c0c0c0c0c0c0c0c004"),
+        "name": "General Tso's Chicken",
+        "description": "Sweet and spicy deep-fried chicken",
+        "price": 13.99,
+        "category": "main",
+        "isAvailable": true,
+        "preparationTime": 18,
+        "imageUrl": "https://images.unsplash.com/photo-1606850780554-b55ea4dd0b70?w=500"
+      },
+      {
+        "_id": ObjectId("65f2d6c1c0c0c0c0c0c0c132"),
+        "restaurantId": ObjectId("65f2d6c0c0c0c0c0c0c0c004"),
+        "name": "Egg Drop Soup",
+        "description": "Wispy beaten eggs in boiled chicken broth",
+        "price": 4.99,
+        "category": "soup",
+        "isAvailable": true,
+        "preparationTime": 10,
+        "imageUrl": "https://images.unsplash.com/photo-1603105037880-880cd4edfb0d?w=500"
+      },
+      {
+        "_id": ObjectId("65f2d6c0c0c0c0c0c0c0c201"),
+        "restaurantId": ObjectId("65f2d6c0c0c0c0c0c0c0c005"),
+        "name": "California Roll",
+        "description": "Crab meat, avocado, and cucumber",
+        "price": 8.99,
+        "category": "sushi",
+        "isAvailable": true,
+        "preparationTime": 10,
+        "imageUrl": "https://images.unsplash.com/photo-1579584425555-c3ce17fd4351?w=500"
+      },
+      {
+        "_id": ObjectId("65f2d6c0c0c0c0c0c0c0c202"),
+        "restaurantId": ObjectId("65f2d6c0c0c0c0c0c0c0c005"),
+        "name": "Spicy Tuna Roll",
+        "description": "Tuna with spicy mayo and cucumber",
+        "price": 9.99,
+        "category": "sushi",
+        "isAvailable": true,
+        "preparationTime": 12,
+        "imageUrl": "https://images.unsplash.com/photo-1617196034183-421b4917c92d?w=500"
+      },
+      {
+        "_id": ObjectId("65f2d6c1c0c0c0c0c0c0c211"),
+        "restaurantId": ObjectId("65f2d6c0c0c0c0c0c0c0c006"),
+        "name": "Carne Asada Tacos",
+        "description": "Grilled steak tacos with onion and cilantro",
+        "price": 3.99,
+        "category": "tacos",
+        "isAvailable": true,
+        "preparationTime": 10,
+        "imageUrl": "https://images.unsplash.com/photo-1565299585323-38d6b0865b47?w=500"
+      },
+      {
+        "_id": ObjectId("65f2d6c1c0c0c0c0c0c0c212"),
+        "restaurantId": ObjectId("65f2d6c0c0c0c0c0c0c0c006"),
+        "name": "Al Pastor Tacos",
+        "description": "Marinated pork tacos with pineapple",
+        "price": 3.99,
+        "category": "tacos",
+        "isAvailable": true,
+        "preparationTime": 10,
+        "imageUrl": "https://images.unsplash.com/photo-1614647457818-2037f5d79e08?w=500"
+      },
+      {
+        "_id": ObjectId("65f2d6c1c0c0c0c0c0c0c221"),
+        "restaurantId": ObjectId("65f2d6c0c0c0c0c0c0c0c007"),
+        "name": "Chicken Tikka Masala",
+        "description": "Grilled chicken chunks in a spiced curry sauce",
+        "price": 16.99,
+        "category": "curry",
+        "isAvailable": true,
+        "preparationTime": 25,
+        "imageUrl": "https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=500"
+      },
+      {
+        "_id": ObjectId("65f2d6c1c0c0c0c0c0c0c225"),
+        "restaurantId": ObjectId("65f2d6c0c0c0c0c0c0c0c007"),
+        "name": "Garlic Naan",
+        "description": "Soft flatbread with garlic and butter",
+        "price": 3.99,
+        "category": "bread",
+        "isAvailable": true,
+        "preparationTime": 10,
+        "imageUrl": "https://images.unsplash.com/photo-1628265820616-e28a96a49c7c?w=500"
+      },
+      {
+        "_id": ObjectId("65f2d6c1c0c0c0c0c0c0c231"),
+        "restaurantId": ObjectId("65f2d6c0c0c0c0c0c0c0c008"),
+        "name": "French Onion Soup",
+        "description": "Rich beef broth with caramelized onions, topped with cheese toast",
+        "price": 9.99,
+        "category": "soup",
+        "isAvailable": true,
+        "preparationTime": 20,
+        "imageUrl": "https://images.unsplash.com/photo-1601072649252-1a340c8a26e5?w=500"
+      },
+      {
+        "_id": ObjectId("65f2d6c1c0c0c0c0c0c0c235"),
+        "restaurantId": ObjectId("65f2d6c0c0c0c0c0c0c0c008"),
+        "name": "Escargots de Bourgogne",
+        "description": "Snails baked in garlic-herb butter",
+        "price": 12.99,
+        "category": "appetizer",
+        "isAvailable": true,
+        "preparationTime": 18,
+        "imageUrl": "https://images.unsplash.com/photo-1619096252214-ef06c45683e3?w=500"
+      },
+      {
+        "_id": ObjectId("65f2d6c1c0c0c0c0c0c0c241"),
+        "restaurantId": ObjectId("65f2d6c0c0c0c0c0c0c0c009"),
+        "name": "Quinoa Power Bowl",
+        "description": "Quinoa with roasted vegetables, avocado, and a lemon-tahini dressing",
+        "price": 14.99,
+        "category": "bowl",
+        "isAvailable": true,
+        "preparationTime": 15,
+        "imageUrl": "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=500"
+      },
+      {
+        "_id": ObjectId("65f2d6c1c0c0c0c0c0c0c246"),
+        "restaurantId": ObjectId("65f2d6c0c0c0c0c0c0c0c00a"),
+        "name": "Pulled Pork Sandwich",
+        "description": "Slow-smoked pulled pork on a brioche bun with coleslaw",
+        "price": 12.99,
+        "category": "sandwich",
+        "isAvailable": true,
+        "preparationTime": 15,
+        "imageUrl": "https://images.unsplash.com/photo-1600891964599-f61ba0e24092?w=500"
+      },
+      {
+        "_id": ObjectId("65f2d6c1c0c0c0c0c0c0c251"),
+        "restaurantId": ObjectId("65f2d6c0c0c0c0c0c0c0c00b"),
+        "name": "Gyro Platter",
+        "description": "Lamb and beef gyro meat served with pita, tzatziki, and salad",
+        "price": 15.99,
+        "category": "platter",
+        "isAvailable": true,
+        "preparationTime": 18,
+        "imageUrl": "https://images.unsplash.com/photo-1599487488170-d11ec9c172f0?w=500"
+      },
+      {
+        "_id": ObjectId("65f2d6c1c0c0c0c0c0c0c256"),
+        "restaurantId": ObjectId("65f2d6c0c0c0c0c0c0c0c00c"),
+        "name": "Classic Pancakes",
+        "description": "Stack of three buttermilk pancakes with syrup and butter",
+        "price": 9.99,
+        "category": "pancakes",
+        "isAvailable": true,
+        "preparationTime": 12,
+        "imageUrl": "https://images.unsplash.com/photo-1528207776546-365bb710ee93?w=500"
+      },
+      {
+        "_id": ObjectId("65f2d6c1c0c0c0c0c0c0c261"),
+        "restaurantId": ObjectId("65f2d6c0c0c0c0c0c0c0c00d"),
+        "name": "Pho Dac Biet (Combination Beef Noodle Soup)",
+        "description": "Beef noodle soup with brisket, flank, tendon, and meatball",
+        "price": 14.99,
+        "category": "pho",
+        "isAvailable": true,
+        "preparationTime": 20,
+        "imageUrl": "https://images.unsplash.com/photo-1582878826629-29b7ad1cdc43?w=500"
+      },
+      {
+        "_id": ObjectId("65f2d6c1c0c0c0c0c0c0c266"),
+        "restaurantId": ObjectId("65f2d6c0c0c0c0c0c0c0c00e"),
+        "name": "Bibimbap",
+        "description": "Rice bowl with assorted vegetables, beef, and a fried egg",
+        "price": 15.99,
+        "category": "rice",
+        "isAvailable": true,
+        "preparationTime": 18,
+        "imageUrl": "https://images.unsplash.com/photo-1553621042-f6e147245754?w=500"
+      },
+      {
+        "_id": ObjectId("65f2d6c1c0c0c0c0c0c0c271"),
+        "restaurantId": ObjectId("65f2d6c0c0c0c0c0c0c0c00f"),
+        "name": "Chocolate Lava Cake",
+        "description": "Warm chocolate cake with a gooey molten center, served with vanilla ice cream",
+        "price": 9.99,
+        "category": "cake",
+        "isAvailable": true,
+        "preparationTime": 15,
+        "imageUrl": "https://images.unsplash.com/photo-1624353365286-3f8d62daad51?w=500"
+      }
+    ]);
+    print("Restaurant Service Seeded.");
+    
+    // Initialize Delivery Service
+    print("Seeding Delivery Service...");
+    db = db.getSiblingDB('delivery_service');
+    try { db.createUser({ user: "app", pwd: "app", roles: [{ role: "readWrite", db: "delivery_service" }] }); } catch(e) { print("User 'app' already exists"); }
+    db.drivers.drop();
+    db.drivers.insertMany([
+      {
+        "_id": ObjectId("65f2d6c0c0c0c0c0c0c0c200"),
+        "name": "John Smith",
+        "phone": "+1-555-1001",
+        "vehicle": "Honda Civic",
+        "licensePlate": "ABC-123",
+        "isAvailable": true,
+        "currentLocation": {
+          "type": "Point",
+          "coordinates": [
+            -74.006,
+            40.7128
+          ]
+        },
+        "rating": 4.8,
+        "totalDeliveries": 156
+      },
+      {
+        "_id": ObjectId("65f2d6c0c0c0c0c0c0c0c201"),
+        "name": "Sarah Johnson",
+        "phone": "+1-555-1002",
+        "vehicle": "Toyota Corolla",
+        "licensePlate": "XYZ-789",
+        "isAvailable": true,
+        "currentLocation": {
+          "type": "Point",
+          "coordinates": [
+            -73.9851,
+            40.7589
+          ]
+        },
+        "rating": 4.9,
+        "totalDeliveries": 203
+      },
+      {
+        "_id": ObjectId("65f2d6c0c0c0c0c0c0c0c202"),
+        "name": "Mike Davis",
+        "phone": "+1-555-1003",
+        "vehicle": "Ford Focus",
+        "licensePlate": "DEF-456",
+        "isAvailable": true,
+        "currentLocation": {
+          "type": "Point",
+          "coordinates": [
+            -73.9934,
+            40.7505
+          ]
+        },
+        "rating": 4.6,
+        "totalDeliveries": 89
+      },
+      {
+        "_id": ObjectId("65f2d6c0c0c0c0c0c0c0c203"),
+        "name": "Emily Wilson",
+        "phone": "+1-555-1004",
+        "vehicle": "Nissan Altima",
+        "licensePlate": "GHI-789",
+        "isAvailable": true,
+        "currentLocation": {
+          "type": "Point",
+          "coordinates": [
+            -73.7949,
+            40.7282
+          ]
+        },
+        "rating": 4.7,
+        "totalDeliveries": 134
+      },
+      {
+        "_id": ObjectId("65f2d6c0c0c0c0c0c0c0c204"),
+        "name": "Alex Brown",
+        "phone": "+1-555-1005",
+        "vehicle": "Hyundai Elantra",
+        "licensePlate": "JKL-012",
+        "isAvailable": true,
+        "currentLocation": {
+          "type": "Point",
+          "coordinates": [
+            -73.9776,
+            40.7614
+          ]
+        },
+        "rating": 4.5,
+        "totalDeliveries": 67
+      }
+    ]);
+    print("Delivery Service Seeded.");
+    
+    // Initialize Order Service
+    print("Initializing Order Service DB...");
+    db = db.getSiblingDB('order_service');
+    try { db.createUser({ user: "app", pwd: "app", roles: [{ role: "readWrite", db: "order_service" }] }); } catch(e) { print("User 'app' already exists"); }
+    print("Order Service Initialized.");
+    
+    // Initialize Payment Service
+    print("Initializing Payment Service DB...");
+    db = db.getSiblingDB('payment_service');
+    try { db.createUser({ user: "app", pwd: "app", roles: [{ role: "readWrite", db: "payment_service" }] }); } catch(e) { print("User 'app' already exists"); }
+    print("Payment Service Initialized.");
+    
+    print("MongoDB Initialization Completed.");
+    
+    

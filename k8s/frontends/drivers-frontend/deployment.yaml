@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: drivers-frontend
+  namespace: food-delivery
+  labels:
+    app: drivers-frontend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: drivers-frontend
+  template:
+    metadata:
+      labels:
+        app: drivers-frontend
+    spec:
+      imagePullSecrets:
+        - name: ghcr-login-secret
+      containers:
+        - name: drivers-frontend
+          image: ghcr.io/vijay-papanaboina/food-delivery-courier-frontend:latest
+          # imagePullPolicy: Never
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+              name: http
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "50m"
+            limits:
+              memory: "128Mi"
+              cpu: "100m"
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 5
+            periodSeconds: 5

@@ -1,0 +1,90 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: restaurant-service
+  namespace: food-delivery
+  labels:
+    app: restaurant-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: restaurant-service
+  template:
+    metadata:
+      labels:
+        app: restaurant-service
+    spec:
+      imagePullSecrets:
+        - name: ghcr-login-secret
+      containers:
+        - name: restaurant-service
+          image: ghcr.io/vijay-papanaboina/food-delivery-restaurant-service:latest
+          # imagePullPolicy: Never
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3000
+              name: http
+          env:
+            - name: PORT
+              value: "3000"
+            - name: SERVICE_NAME
+              value: "restaurant-service"
+            - name: NODE_ENV
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: NODE_ENV
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: app-secrets
+                  key: MONGO_URI_RESTAURANT
+            - name: KAFKA_BROKERS
+              valueFrom:
+                configMapKeyRef:
+                  name: kafka-config
+                  key: KAFKA_BROKERS
+            - name: KAFKA_CLIENT_ID
+              value: "restaurant-service"
+            - name: KAFKA_GROUP_ID
+              value: "restaurant-service-group"
+            - name: KAFKAJS_NO_PARTITIONER_WARNING
+              valueFrom:
+                configMapKeyRef:
+                  name: kafka-config
+                  key: KAFKAJS_NO_PARTITIONER_WARNING
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: app-secrets
+                  key: JWT_SECRET
+            - name: REFRESH_TOKEN_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: app-secrets
+                  key: REFRESH_TOKEN_SECRET
+            - name: FRONTEND_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: FRONTEND_URL
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "100m"
+            limits:
+              memory: "256Mi"
+              cpu: "200m"
+          livenessProbe:
+            httpGet:
+              path: /api/restaurant-service/health
+              port: 3000
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /api/restaurant-service/health
+              port: 3000
+            initialDelaySeconds: 10
+            periodSeconds: 5

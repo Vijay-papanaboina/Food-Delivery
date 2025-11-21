@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongo
+  namespace: food-delivery
+  labels:
+    app: mongo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mongo
+  template:
+    metadata:
+      labels:
+        app: mongo
+    spec:
+      containers:
+        - name: mongo
+          image: mongo:6.0
+          ports:
+            - containerPort: 27017
+              name: mongodb
+          env:
+            - name: MONGO_INITDB_ROOT_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: app-secrets
+                  key: MONGO_ROOT_USERNAME
+            - name: MONGO_INITDB_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: app-secrets
+                  key: MONGO_ROOT_PASSWORD
+          volumeMounts:
+            - name: mongo-storage
+              mountPath: /data/db
+            - name: mongo-init-scripts
+              mountPath: /docker-entrypoint-initdb.d
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "100m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+      volumes:
+        - name: mongo-storage
+          persistentVolumeClaim:
+            claimName: mongo-pvc
+        - name: mongo-init-scripts
+          configMap:
+            name: mongo-init-scripts
+            defaultMode: 0755

@@ -1,0 +1,113 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: food-delivery-ingress
+  namespace: food-delivery
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+spec:
+  ingressClassName: nginx
+  rules:
+    # Customer frontend
+    - host: customers.agrifacts.space
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: customers-frontend
+                port:
+                  number: 80
+
+    # Delivery frontend
+    - host: delivery.agrifacts.space
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: delivery-frontend
+                port:
+                  number: 80
+
+    # Restaurant frontend
+    - host: restaurants.agrifacts.space
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: restaurants-frontend
+                port:
+                  number: 80
+
+    # API Gateway - Service-based routing
+    - host: api.agrifacts.space
+      http:
+        paths:
+          # User Service
+          - path: /api/user-service
+            pathType: Prefix
+            backend:
+              service:
+                name: user-service
+                port:
+                  number: 3000
+
+          # Order Service
+          - path: /api/order-service
+            pathType: Prefix
+            backend:
+              service:
+                name: order-service
+                port:
+                  number: 3000
+
+          # Payment Service
+          - path: /api/payment-service
+            pathType: Prefix
+            backend:
+              service:
+                name: payment-service
+                port:
+                  number: 3000
+
+          # Delivery Service
+          - path: /api/delivery-service
+            pathType: Prefix
+            backend:
+              service:
+                name: delivery-service
+                port:
+                  number: 3000
+
+          # Restaurant Service
+          - path: /api/restaurant-service
+            pathType: Prefix
+            backend:
+              service:
+                name: restaurant-service
+                port:
+                  number: 3000
+
+          # Notification Service
+          - path: /api/notification-service
+            pathType: Prefix
+            backend:
+              service:
+                name: notification-service
+                port:
+                  number: 3000
+
+  # TLS configuration (optional, uncomment when ready)
+  # tls:
+  # - hosts:
+  #   - customers.fooddelivery.local
+  #   - delivery.fooddelivery.local
+  #   - restaurants.fooddelivery.local
+  #   - api.fooddelivery.local
+  #   secretName: fooddelivery-tls

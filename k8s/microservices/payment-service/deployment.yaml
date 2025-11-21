@@ -1,0 +1,115 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: payment-service
+  namespace: food-delivery
+  labels:
+    app: payment-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: payment-service
+  template:
+    metadata:
+      labels:
+        app: payment-service
+    spec:
+      imagePullSecrets:
+        - name: ghcr-login-secret
+      containers:
+        - name: payment-service
+          image: ghcr.io/vijay-papanaboina/food-delivery-payment-service:latest
+          # imagePullPolicy: Never
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3000
+              name: http
+          env:
+            - name: PORT
+              value: "3000"
+            - name: SERVICE_NAME
+              value: "payment-service"
+            - name: NODE_ENV
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: NODE_ENV
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: app-secrets
+                  key: MONGO_URI_PAYMENT
+            - name: KAFKA_BROKERS
+              valueFrom:
+                configMapKeyRef:
+                  name: kafka-config
+                  key: KAFKA_BROKERS
+            - name: KAFKA_CLIENT_ID
+              value: "payment-service"
+            - name: KAFKA_GROUP_ID
+              value: "payment-service-group"
+            - name: KAFKAJS_NO_PARTITIONER_WARNING
+              valueFrom:
+                configMapKeyRef:
+                  name: kafka-config
+                  key: KAFKAJS_NO_PARTITIONER_WARNING
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: app-secrets
+                  key: JWT_SECRET
+            - name: REFRESH_TOKEN_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: app-secrets
+                  key: REFRESH_TOKEN_SECRET
+            - name: STRIPE_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: app-secrets
+                  key: STRIPE_SECRET_KEY
+            - name: STRIPE_WEBHOOK_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: app-secrets
+                  key: STRIPE_WEBHOOK_SECRET
+            - name: FRONTEND_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: FRONTEND_URL
+            - name: CUSTOMER_FRONTEND_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: CUSTOMER_FRONTEND_URL
+            - name: ORDER_SERVICE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: ORDER_SERVICE_URL
+            - name: RESTAURANT_SERVICE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: RESTAURANT_SERVICE_URL
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "100m"
+            limits:
+              memory: "256Mi"
+              cpu: "200m"
+          livenessProbe:
+            httpGet:
+              path: /api/payment-service/health
+              port: 3000
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /api/payment-service/health
+              port: 3000
+            initialDelaySeconds: 10
+            periodSeconds: 5

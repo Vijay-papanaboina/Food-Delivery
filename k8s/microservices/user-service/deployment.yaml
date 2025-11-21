@@ -1,0 +1,101 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-service
+  namespace: food-delivery
+  labels:
+    app: user-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: user-service
+  template:
+    metadata:
+      labels:
+        app: user-service
+    spec:
+      imagePullSecrets:
+        - name: ghcr-login-secret
+      containers:
+        - name: user-service
+          image: ghcr.io/vijay-papanaboina/food-delivery-user-service:latest
+          # imagePullPolicy: Never
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3000
+              name: http
+          env:
+            - name: PORT
+              value: "3000"
+            - name: SERVICE_NAME
+              value: "user-service"
+            - name: NODE_ENV
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: NODE_ENV
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: app-secrets
+                  key: MONGO_URI_USER
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: app-secrets
+                  key: JWT_SECRET
+            - name: JWT_EXPIRY
+              valueFrom:
+                secretKeyRef:
+                  name: app-secrets
+                  key: JWT_EXPIRY
+            - name: REFRESH_TOKEN_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: app-secrets
+                  key: REFRESH_TOKEN_SECRET
+            - name: REFRESH_TOKEN_EXPIRY
+              valueFrom:
+                secretKeyRef:
+                  name: app-secrets
+                  key: REFRESH_TOKEN_EXPIRY
+            - name: FRONTEND_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: FRONTEND_URL
+            - name: CUSTOMER_DOMAIN
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: CUSTOMER_DOMAIN
+            - name: RESTAURANT_DOMAIN
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: RESTAURANT_DOMAIN
+            - name: DELIVERY_DOMAIN
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: DELIVERY_DOMAIN
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "100m"
+            limits:
+              memory: "256Mi"
+              cpu: "200m"
+          livenessProbe:
+            httpGet:
+              path: /api/user-service/health
+              port: 3000
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /api/user-service/health
+              port: 3000
+            initialDelaySeconds: 10
+            periodSeconds: 5

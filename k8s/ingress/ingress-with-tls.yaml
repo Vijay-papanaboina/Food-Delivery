@@ -1,0 +1,127 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: food-delivery-ingress
+  namespace: food-delivery
+  annotations:
+    # Force HTTPS redirect in production
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+
+    # cert-manager will automatically issue certificates
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+
+    # nginx.ingress.kubernetes.io/ssl-redirect: "false"
+
+    # Optional: Rate limiting
+    nginx.ingress.kubernetes.io/limit-rps: "100"
+
+    # Optional: Upload size for file uploads
+    nginx.ingress.kubernetes.io/proxy-body-size: "10m"
+
+spec:
+  ingressClassName: nginx
+
+  # TLS Configuration - cert-manager will automatically populate the secret
+  tls:
+    - hosts:
+        - customers.agrifacts.space
+        - drivers.agrifacts.space
+        - restaurants.agrifacts.space
+        - api.agrifacts.space
+      secretName: fooddelivery-tls # cert-manager creates this automatically
+
+  rules:
+    # Customer frontend
+    - host: customers.agrifacts.space
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: customers-frontend
+                port:
+                  number: 80
+
+    # Drivers frontend
+    - host: drivers.agrifacts.space
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: drivers-frontend
+                port:
+                  number: 80
+
+    # Restaurant frontend
+    - host: restaurants.agrifacts.space
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: restaurants-frontend
+                port:
+                  number: 80
+
+    # API Gateway - Service-based routing
+    - host: api.agrifacts.space
+      http:
+        paths:
+          # User Service
+          - path: /api/user-service
+            pathType: Prefix
+            backend:
+              service:
+                name: user-service
+                port:
+                  number: 3000
+
+          # Order Service
+          - path: /api/order-service
+            pathType: Prefix
+            backend:
+              service:
+                name: order-service
+                port:
+                  number: 3000
+
+          # Payment Service
+          - path: /api/payment-service
+            pathType: Prefix
+            backend:
+              service:
+                name: payment-service
+                port:
+                  number: 3000
+
+          # Delivery Service
+          - path: /api/delivery-service
+            pathType: Prefix
+            backend:
+              service:
+                name: delivery-service
+                port:
+                  number: 3000
+
+          # Restaurant Service
+          - path: /api/restaurant-service
+            pathType: Prefix
+            backend:
+              service:
+                name: restaurant-service
+                port:
+                  number: 3000
+
+          # Notification Service
+          - path: /api/notification-service
+            pathType: Prefix
+            backend:
+              service:
+                name: notification-service
+                port:
+                  number: 3000
