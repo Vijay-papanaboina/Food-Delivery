@@ -151,7 +151,7 @@ export default function Checkout() {
       const orderResult = await orderApi.createOrder({
         restaurantId: restaurantId!,
         items: items.map((item) => ({
-          itemId: item.id,
+          id: item.id,
           quantity: item.quantity,
           price: item.price,
         })),
@@ -164,7 +164,7 @@ export default function Checkout() {
 
       // 2. Create Stripe Checkout session
       const sessionResponse = await paymentApi.processPayment({
-        orderId: order.orderId,
+        orderId: order.id,
       });
 
       // 3. Redirect to Stripe Checkout

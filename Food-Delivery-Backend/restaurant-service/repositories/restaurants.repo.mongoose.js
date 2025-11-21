@@ -57,7 +57,6 @@ export async function getRestaurants(filters = {}) {
 
   const restaurants = await dbQuery;
 
-  // Transform to match original Drizzle output format (snake_case)
   return restaurants.map(r => r.toObject());
 }
 

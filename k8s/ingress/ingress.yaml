@@ -10,7 +10,7 @@ spec:
   ingressClassName: nginx
   rules:
     # Customer frontend
-    - host: customers.agrifacts.space
+    - host: customers.fooddelivery.local
       http:
         paths:
           - path: /
@@ -22,7 +22,7 @@ spec:
                   number: 80
 
     # Delivery frontend
-    - host: delivery.agrifacts.space
+    - host: delivery.fooddelivery.local
       http:
         paths:
           - path: /
@@ -34,7 +34,7 @@ spec:
                   number: 80
 
     # Restaurant frontend
-    - host: restaurants.agrifacts.space
+    - host: restaurants.fooddelivery.local
       http:
         paths:
           - path: /
@@ -46,7 +46,7 @@ spec:
                   number: 80
 
     # API Gateway - Service-based routing
-    - host: api.agrifacts.space
+    - host: api.fooddelivery.local
       http:
         paths:
           # User Service

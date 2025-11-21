@@ -25,15 +25,15 @@ spec:
   # TLS Configuration - cert-manager will automatically populate the secret
   tls:
     - hosts:
-        - customers.agrifacts.space
-        - drivers.agrifacts.space
-        - restaurants.agrifacts.space
-        - api.agrifacts.space
+        - customers.fooddelivery.local
+        - drivers.fooddelivery.local
+        - restaurants.fooddelivery.local
+        - api.fooddelivery.local
       secretName: fooddelivery-tls # cert-manager creates this automatically
 
   rules:
     # Customer frontend
-    - host: customers.agrifacts.space
+    - host: customers.fooddelivery.local
       http:
         paths:
           - path: /
@@ -45,7 +45,7 @@ spec:
                   number: 80
 
     # Drivers frontend
-    - host: drivers.agrifacts.space
+    - host: drivers.fooddelivery.local
       http:
         paths:
           - path: /
@@ -57,7 +57,7 @@ spec:
                   number: 80
 
     # Restaurant frontend
-    - host: restaurants.agrifacts.space
+    - host: restaurants.fooddelivery.local
       http:
         paths:
           - path: /
@@ -69,7 +69,7 @@ spec:
                   number: 80
 
     # API Gateway - Service-based routing
-    - host: api.agrifacts.space
+    - host: api.fooddelivery.local
       http:
         paths:
           # User Service

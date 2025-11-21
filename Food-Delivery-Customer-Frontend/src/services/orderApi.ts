@@ -15,9 +15,21 @@ export class OrderApi extends ApiService {
     customerName: string;
     customerPhone: string;
   }): Promise<{ message: string; order: Order }> => {
+    // Transform frontend 'id' to backend 'itemId' for the payload
+    const transformedItems = orderData.items.map(item => ({
+      itemId: item.id,
+      quantity: item.quantity,
+      price: item.price,
+    }));
+
+    const payload = {
+      ...orderData,
+      items: transformedItems,
+    };
+
     const result = await this.post<{ message: string; order: Order }>(
       "/api/order-service/orders",
-      orderData,
+      payload,
     );
 
     return result;

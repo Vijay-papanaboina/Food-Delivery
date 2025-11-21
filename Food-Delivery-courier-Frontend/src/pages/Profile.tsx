@@ -53,7 +53,7 @@ export const Profile = () => {
             <div>
               <p className="text-sm text-muted-foreground">User ID</p>
               <p className="font-mono text-sm mt-1">
-                {user?.userId?.slice(0, 8) || "N/A"}...
+                {user?.id?.slice(0, 8) || "N/A"}...
               </p>
             </div>
             <div>

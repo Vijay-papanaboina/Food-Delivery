@@ -48,7 +48,6 @@ export async function getMenuItems(restaurantId, filters = {}) {
   }
 
   // Map result to match expected output format (snake_case to camelCase if needed, or just plain)
-  // The original repo returned snake_case keys because of Drizzle mapping.
   // We should return camelCase as Mongoose does, but we might need to adapt the controller.
   // For now, we return standard Mongoose objects (camelCase).
   const items = await dbQuery;

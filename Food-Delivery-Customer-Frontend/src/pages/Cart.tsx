@@ -90,7 +90,7 @@ export default function Cart() {
         <div className="lg:col-span-2 space-y-4">
           {items.map((item) => (
             <Card
-              key={item.itemId}
+              key={item.id}
               className={
                 item.isAvailable === false ? "opacity-60 border-orange-200" : ""
               }
@@ -123,7 +123,7 @@ export default function Cart() {
                           size="sm"
                           disabled={isUpdating}
                           onClick={() =>
-                            handleQuantityChange(item.itemId, item.quantity - 1)
+                            handleQuantityChange(item.id, item.quantity - 1)
                           }
                         >
                           <Minus className="h-4 w-4" />
@@ -136,7 +136,7 @@ export default function Cart() {
                           size="sm"
                           disabled={isUpdating}
                           onClick={() =>
-                            handleQuantityChange(item.itemId, item.quantity + 1)
+                            handleQuantityChange(item.id, item.quantity + 1)
                           }
                         >
                           <Plus className="h-4 w-4" />
@@ -167,7 +167,7 @@ export default function Cart() {
                       variant="ghost"
                       size="sm"
                       disabled={isUpdating}
-                      onClick={() => handleRemoveItem(item.itemId, item.name)}
+                      onClick={() => handleRemoveItem(item.id, item.name)}
                       className="text-destructive hover:text-destructive"
                     >
                       <Trash2 className="h-4 w-4" />

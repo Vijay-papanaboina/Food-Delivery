@@ -156,10 +156,10 @@ kubectl get ingress -n food-delivery
 INGRESS_IP=$(kubectl get ingress food-delivery-ingress -n food-delivery -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
 
 # Add to /etc/hosts (Linux/Mac) or C:\Windows\System32\drivers\etc\hosts (Windows)
-echo "$INGRESS_IP customers.agrifacts.space" | sudo tee -a /etc/hosts
-echo "$INGRESS_IP drivers.agrifacts.space" | sudo tee -a /etc/hosts
-echo "$INGRESS_IP restaurants.agrifacts.space" | sudo tee -a /etc/hosts
-echo "$INGRESS_IP api.agrifacts.space" | sudo tee -a /etc/hosts
+echo "$INGRESS_IP customers.fooddelivery.local" | sudo tee -a /etc/hosts
+echo "$INGRESS_IP drivers.fooddelivery.local" | sudo tee -a /etc/hosts
+echo "$INGRESS_IP restaurants.fooddelivery.local" | sudo tee -a /etc/hosts
+echo "$INGRESS_IP api.fooddelivery.local" | sudo tee -a /etc/hosts
 ```
 
 ## Quick Deploy (All at Once)
@@ -254,10 +254,10 @@ kubectl delete -f base/
 
 After deployment:
 
-- Customer App: https://customers.agrifacts.space
-- Drivers App: https://drivers.agrifacts.space
-- Restaurant App: https://restaurants.agrifacts.space
-- API Gateway: https://api.agrifacts.space
+- Customer App: http://customers.fooddelivery.local
+- Drivers App: http://drivers.fooddelivery.local
+- Restaurant App: http://restaurants.fooddelivery.local
+- API Gateway: http://api.fooddelivery.local
 
 ## Production Considerations
 

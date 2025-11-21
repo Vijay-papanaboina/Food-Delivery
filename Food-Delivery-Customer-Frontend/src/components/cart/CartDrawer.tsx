@@ -70,7 +70,7 @@ export default function CartDrawer({ children }: CartDrawerProps) {
                 {/* Cart Items */}
                 <div className="space-y-3 max-h-64 overflow-y-auto">
                   {items.map((item) => (
-                    <Card key={item.itemId} className="p-3">
+                    <Card key={item.id} className="p-3">
                       <CardContent className="p-0">
                         <div className="flex items-center justify-between">
                           <div className="flex-1 min-w-0">
@@ -91,7 +91,7 @@ export default function CartDrawer({ children }: CartDrawerProps) {
                                 className="h-6 w-6 p-0"
                                 onClick={() =>
                                   handleQuantityChange(
-                                    item.itemId,
+                                    item.id,
                                     item.quantity - 1
                                   )
                                 }
@@ -107,7 +107,7 @@ export default function CartDrawer({ children }: CartDrawerProps) {
                                 className="h-6 w-6 p-0"
                                 onClick={() =>
                                   handleQuantityChange(
-                                    item.itemId,
+                                    item.id,
                                     item.quantity + 1
                                   )
                                 }
@@ -129,7 +129,7 @@ export default function CartDrawer({ children }: CartDrawerProps) {
                               size="sm"
                               className="h-6 w-6 p-0 text-destructive hover:text-destructive"
                               onClick={() =>
-                                handleRemoveItem(item.itemId, item.name)
+                                handleRemoveItem(item.id, item.name)
                               }
                             >
                               <Trash2 className="h-3 w-3" />

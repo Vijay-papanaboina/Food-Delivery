@@ -18,7 +18,7 @@ export class AuthApi extends ApiService {
 
   private transformBackendUser(backendUser: BackendUser): User {
     return {
-      userId: backendUser.id,
+      id: backendUser.id,
       email: backendUser.email,
       name: backendUser.name,
       role: "driver",
@@ -52,7 +52,7 @@ export class AuthApi extends ApiService {
     const user = this.transformBackendUser(result.user);
     useAuthStore.getState().login(user, result.accessToken);
 
-    logger.info("Login successful", { userId: user.userId, role: user.role });
+    logger.info("Login successful", { id: user.id, role: user.role });
     return { user, accessToken: result.accessToken };
   };
 

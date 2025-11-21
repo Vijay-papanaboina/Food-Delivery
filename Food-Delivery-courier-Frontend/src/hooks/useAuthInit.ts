@@ -22,7 +22,7 @@ export const useAuthInit = () => {
 
         if (authResult.isAuthenticated && authResult.user) {
           logger.info("User authenticated on app load", {
-            userId: authResult.user.userId,
+            id: authResult.user.id,
             role: authResult.user.role,
           });
         } else {

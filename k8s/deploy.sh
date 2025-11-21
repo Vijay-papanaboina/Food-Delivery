@@ -72,10 +72,8 @@ check_ingress_controller() {
         print_success "NGINX Ingress Controller is installed"
     else
         print_warning "NGINX Ingress Controller not found"
-        print_info "Install it with:"
-        echo "  kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.10.0/deploy/static/provider/cloud/deploy.yaml"
-        echo ""
-        read -p "Continue anyway? (y/n) " -n 1 -r
+        print_info "Installing it with:"
+        kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.10.0/deploy/static/provider/cloud/deploy.yaml
         echo ""
         if [[ ! $REPLY =~ ^[Yy]$ ]]; then
             exit 1
@@ -90,10 +88,8 @@ check_cert_manager() {
         print_success "cert-manager is installed"
     else
         print_warning "cert-manager not found (Required for TLS)"
-        print_info "Install it with:"
-        echo "  kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.14.0/cert-manager.yaml"
-        echo ""
-        read -p "Continue anyway? (y/n) " -n 1 -r
+        print_info "Installing it with:"
+        kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.14.0/cert-manager.yaml
         echo ""
         if [[ ! $REPLY =~ ^[Yy]$ ]]; then
             exit 1
@@ -146,8 +142,8 @@ deploy_configmaps() {
 deploy_infrastructure() {
     print_step "Deploying Infrastructure (Kafka, MongoDB)"
 
-    # 1. Deploy ClusterIssuer (if cert-manager exists)
-    if [ -d "infrastructure/cert-manager" ]; then
+    # 1. Deploy ClusterIssuer (Only in Prod/if cert-manager exists)
+    if [ "$IS_PROD" = true ] && [ -d "infrastructure/cert-manager" ]; then
         print_info "Applying ClusterIssuer..."
         kubectl apply -f infrastructure/cert-manager/ || true
     fi
@@ -217,10 +213,11 @@ deploy_frontends() {
 deploy_ingress() {
     print_step "Deploying Ingress"
     
-    # Check if we have the TLS version (preferred for prod)
-    if [ -f "ingress/ingress-with-tls.yaml" ]; then
+    if [ "$IS_PROD" = true ]; then
+        print_info "Deploying TLS Ingress..."
         kubectl apply -f ingress/ingress-with-tls.yaml
     else
+        print_info "Deploying HTTP Ingress (Dev Mode)..."
         kubectl apply -f ingress/ingress.yaml
     fi
     
@@ -241,10 +238,10 @@ show_status() {
 # Function to show access URLs
 show_urls() {
     print_header "Application URLs"
-    echo "Customer App:    https://customers.agrifacts.space"
-    echo "Drivers App:     https://drivers.agrifacts.space"
-    echo "Restaurant App:  https://restaurants.agrifacts.space"
-    echo "API Gateway:     https://api.agrifacts.space"
+    echo "Customer App:    http://customers.fooddelivery.local"
+    echo "Drivers App:     http://drivers.fooddelivery.local"
+    echo "Restaurant App:  http://restaurants.fooddelivery.local"
+    echo "API Gateway:     http://api.fooddelivery.local"
     echo ""
     print_warning "Don't forget to add these to your /etc/hosts file!"
     echo ""
@@ -262,8 +259,18 @@ main() {
 
     check_kubectl
     check_cluster
-    check_ingress_controller
-    check_cert_manager
+
+    echo ""
+    read -p "Deploy for Production (with TLS & Ingress Controller checks)? (y/n) " -n 1 -r
+    echo ""
+    if [[ $REPLY =~ ^[Yy]$ ]]; then
+        IS_PROD=true
+        check_ingress_controller
+        check_cert_manager
+    else
+        IS_PROD=false
+        print_info "Development mode: Skipping Ingress Controller & Cert-Manager checks."
+    fi
 
     echo ""
     read -p "Press Enter to continue or Ctrl+C to cancel"
