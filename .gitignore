@@ -87,7 +87,6 @@ docker-compose.override.yml
 .gemini
 .env
 build-docker-images.ps1
-prod-deploy.ps1
 PRODUCTION_DEPLOYMENT_GUIDE.md
 build-docker-images.sh
 start-all-services.ps1
