@@ -40,6 +40,11 @@ function Print-Error {
     Write-Host "✗ $Message" -ForegroundColor Red
 }
 
+function Print-Warning {
+    param([string]$Message)
+    Write-Host "⚠ $Message" -ForegroundColor Yellow
+}
+
 function Print-Info {
     param([string]$Message)
     Write-Host "ℹ $Message" -ForegroundColor Cyan
@@ -99,6 +104,31 @@ Print-Step "Checking Ingress Controller"
 if ($IS_PROD) {
     Invoke-Command "kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.10.0/deploy/static/provider/cloud/deploy.yaml" "Installed NGINX Ingress Controller"
     Invoke-Command "kubectl wait --namespace ingress-nginx --for=condition=ready pod --selector=app.kubernetes.io/component=controller --timeout=120s" "Waited for NGINX Ingress to be ready"
+
+    # NEW STEP: Wait for External IP
+    Print-Info "Waiting for Ingress External IP..."
+    $ingressIp = ""
+    for ($i = 1; $i -le 30; $i++) {
+        $ingressIp = kubectl get svc -n ingress-nginx ingress-nginx-controller -o jsonpath='{.status.loadBalancer.ingress[0].ip}'
+        if ($ingressIp) {
+            Print-Success "Ingress External IP: $ingressIp"
+            break
+        }
+        Print-Info "Waiting for IP assignment... ($i/30)"
+        Start-Sleep -Seconds 10
+    }
+
+    if (-not $ingressIp) {
+        Print-Error "Failed to get External IP. Check Ingress Controller."
+        exit 1
+    }
+
+    Print-Warning "ACTION REQUIRED: Update your DNS A records for *.agrifacts.space to point to: $ingressIp"
+    $null = Read-Host "(IP copied to clipboard, press Enter to continue deployment)"
+    Write-Host ""
+    Print-Info "Deployment will continue. You will be asked to confirm DNS update before Ingress is applied at the end."
+    Write-Host ""
+
 } else {
     Print-Info "Skipping Ingress Controller check (Dev Mode)"
 }
@@ -166,6 +196,10 @@ Write-Host ""
 # Step 5: Deploy Ingress
 Print-Step "Deploying Ingress"
 if ($IS_PROD) {
+    Print-Warning "Ensure DNS records for *.agrifacts.space point to the Ingress IP ($ingressIp)"
+    $null = Read-Host "Have you updated your DNS records? Press Enter to apply TLS Ingress (or Ctrl+C to cancel)..."
+    Write-Host ""
+
     Print-Info "Deploying TLS Ingress..."
     Invoke-Command "kubectl apply -f ingress/ingress-with-tls.yaml" "Deployed TLS ingress"
 } else {

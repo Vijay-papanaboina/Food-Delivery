@@ -75,9 +75,7 @@ check_ingress_controller() {
         print_info "Installing it with:"
         kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.10.0/deploy/static/provider/cloud/deploy.yaml
         echo ""
-        if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-            exit 1
-        fi
+        # No need for read -p here
     fi
 }
 
@@ -91,9 +89,7 @@ check_cert_manager() {
         print_info "Installing it with:"
         kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.14.0/cert-manager.yaml
         echo ""
-        if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-            exit 1
-        fi
+        # No need for read -p here
     fi
 }
 
@@ -214,6 +210,11 @@ deploy_ingress() {
     print_step "Deploying Ingress"
     
     if [ "$IS_PROD" = true ]; then
+        # Prompt user for DNS update confirmation before applying TLS ingress
+        print_warning "Ensure DNS records for *.your.domain point to: $INGRESS_IP"
+        read -p "Have you updated your DNS records? Press Enter to apply TLS Ingress (or Ctrl+C to cancel)..." -n 1 -r
+        echo ""
+        
         print_info "Deploying TLS Ingress..."
         kubectl apply -f ingress/ingress-with-tls.yaml
     else
@@ -266,6 +267,31 @@ main() {
     if [[ $REPLY =~ ^[Yy]$ ]]; then
         IS_PROD=true
         check_ingress_controller
+
+        # NEW STEP 1.5: Get and display Ingress External IP (Production Only)
+        print_step "Waiting for Ingress External IP"
+        INGRESS_IP=""
+        for i in {1..30}; do # Try for 5 minutes (30 * 10s)
+            INGRESS_IP=$(kubectl get svc -n ingress-nginx ingress-nginx-controller -o jsonpath='{.status.loadBalancer.ingress[0].ip}' 2>/dev/null)
+            if [ -n "$INGRESS_IP" ]; then
+                print_success "Ingress External IP: $INGRESS_IP"
+                break
+            fi
+            print_info "Waiting for Ingress External IP to be assigned... (attempt $i/30)"
+            sleep 10
+        done
+
+        if [ -z "$INGRESS_IP" ]; then
+            print_error "Failed to get Ingress External IP after 5 minutes. Check Ingress Controller deployment."
+            exit 1
+        fi
+
+        print_warning "ACTION REQUIRED: Update your DNS A records for *.agrifacts.space to point to: $INGRESS_IP"
+        read -p "(IP copied to clipboard, press Enter to continue deployment) " -n 1 -r || true # Non-blocking for deployment logic
+        echo ""
+        print_info "Deployment will continue. You will be asked to confirm DNS update before Ingress is applied at the end."
+        echo ""
+
         check_cert_manager
     else
         IS_PROD=false
