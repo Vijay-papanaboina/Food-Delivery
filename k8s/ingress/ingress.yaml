@@ -22,14 +22,14 @@ spec:
                   number: 80
 
     # Delivery frontend
-    - host: delivery.fooddelivery.local
+    - host: drivers.fooddelivery.local
       http:
         paths:
           - path: /
             pathType: Prefix
             backend:
               service:
-                name: delivery-frontend
+                name: drivers-frontend
                 port:
                   number: 80
 
