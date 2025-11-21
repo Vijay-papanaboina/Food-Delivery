@@ -6,7 +6,11 @@ import {
   validateTokenService,
 } from "../services/auth.service.js";
 import { logger } from "../utils/logger.js";
-import { validateDomainForRole } from "../utils/domainValidator.js";
+import {
+  validateDomainForRole,
+  extractOrigin,
+  mapDomainToRole,
+} from "../utils/domainValidator.js";
 
 export const signup = async (req, res) => {
   try {
@@ -23,8 +27,8 @@ export const signup = async (req, res) => {
 
     const result = await signupService(req.body);
 
-    // Set refresh token in HTTP-only cookie
-    res.cookie("refreshToken", result.refreshToken, {
+    // Set refresh token in HTTP-only cookie (Always customer for signup)
+    res.cookie("refreshToken_customer", result.refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
@@ -69,7 +73,6 @@ export const login = async (req, res) => {
     const result = await loginService(email, password, requiredRole);
 
     // Validate domain matches user role (production only)
-    // This check is kept in controller as it relies on req object
     const isDomainValid = validateDomainForRole(req, result.user.role);
     if (!isDomainValid) {
       return res.status(401).json({
@@ -77,8 +80,9 @@ export const login = async (req, res) => {
       });
     }
 
-    // Set refresh token in HTTP-only cookie
-    res.cookie("refreshToken", result.refreshToken, {
+    // Set refresh token in HTTP-only cookie with role-specific name
+    const cookieName = `refreshToken_${result.user.role}`;
+    res.cookie(cookieName, result.refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
@@ -103,7 +107,22 @@ export const login = async (req, res) => {
 
 export const refreshToken = async (req, res) => {
   try {
-    const token = req.cookies.refreshToken;
+    // Determine which cookie to read based on the domain
+    const origin = extractOrigin(req);
+    const expectedRole = mapDomainToRole(origin);
+    
+    if (!expectedRole) {
+      logger.warn(`Refresh request from unknown origin: ${origin}`);
+      return res.status(401).json({ error: "Unauthorized origin" });
+    }
+
+    const cookieName = `refreshToken_${expectedRole}`;
+    const token = req.cookies[cookieName];
+
+    if (!token) {
+      return res.status(401).json({ error: "No refresh token found" });
+    }
+
     const result = await refreshTokenService(token);
     
     // Validate domain matches user role
@@ -116,11 +135,19 @@ export const refreshToken = async (req, res) => {
     res.json(result);
   } catch (error) {
     console.error("Refresh token error:", error.message);
-    res.clearCookie("refreshToken", {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-    });
+    
+    // Clear the cookie we tried to use
+    const origin = extractOrigin(req);
+    const expectedRole = mapDomainToRole(origin);
+    if (expectedRole) {
+      const cookieName = `refreshToken_${expectedRole}`;
+      res.clearCookie(cookieName, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
+      });
+    }
+
     if (error.statusCode) {
       return res.status(error.statusCode).json({ error: error.message });
     }
@@ -158,7 +185,20 @@ export const logout = async (req, res) => {
       email: req.user?.email,
     });
 
-    res.clearCookie("refreshToken", {
+    // Clear cookie based on role (if known) or Origin
+    let cookieName = "refreshToken"; // Default fallback
+    
+    if (req.user?.role) {
+      cookieName = `refreshToken_${req.user.role}`;
+    } else {
+      const origin = extractOrigin(req);
+      const role = mapDomainToRole(origin);
+      if (role) {
+        cookieName = `refreshToken_${role}`;
+      }
+    }
+
+    res.clearCookie(cookieName, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
