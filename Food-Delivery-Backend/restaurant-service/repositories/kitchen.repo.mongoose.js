@@ -23,7 +23,7 @@ export async function upsertKitchenOrder(orderData) {
 }
 
 export async function updateKitchenOrderStatus(
-  orderId,
+  id,
   status,
   readyAt = null,
   startedAt = null,
@@ -36,11 +36,17 @@ export async function updateKitchenOrderStatus(
   if (estimatedReadyTime) updateData.estimatedReadyTime = new Date(estimatedReadyTime);
   if (preparationTime !== null) updateData.preparationTime = preparationTime;
 
-  await KitchenOrder.findOneAndUpdate({ orderId }, updateData);
+  let result = await KitchenOrder.findByIdAndUpdate(id, updateData);
+  if (!result) {
+    await KitchenOrder.findOneAndUpdate({ orderId: id }, updateData);
+  }
 }
 
-export async function getKitchenOrder(orderId) {
-  const order = await KitchenOrder.findOne({ orderId });
+export async function getKitchenOrder(id) {
+  let order = await KitchenOrder.findById(id);
+  if (!order) {
+    order = await KitchenOrder.findOne({ orderId: id });
+  }
   return order ? order.toObject() : null;
 }
 

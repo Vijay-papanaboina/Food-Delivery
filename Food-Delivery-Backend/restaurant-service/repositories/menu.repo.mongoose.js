@@ -47,11 +47,8 @@ export async function getMenuItems(restaurantId, filters = {}) {
     dbQuery = dbQuery.limit(Number(filters.limit));
   }
 
-  // Map result to match expected output format (snake_case to camelCase if needed, or just plain)
-  // We should return camelCase as Mongoose does, but we might need to adapt the controller.
-  // For now, we return standard Mongoose objects (camelCase).
   const items = await dbQuery;
-  return items.map(item => item.toObject());
+  return items;
 }
 
 export async function getMenuItemById(itemId) {

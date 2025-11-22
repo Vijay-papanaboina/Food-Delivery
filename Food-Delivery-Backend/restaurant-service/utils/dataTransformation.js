@@ -42,10 +42,14 @@ export function transformRestaurant(restaurant) {
 
 export function transformMenuItem(item) {
   if (!item) return null;
-  const i = item.toObject ? item.toObject() : item;
+  const i = item.toObject ? item.toObject({ virtuals: true }) : item;
+  
+  // Ensure ID is available
+  const id = i.id || (i._id ? i._id.toString() : null);
+
   return {
     ...i,
-    id: i.id,
+    id: id,
     restaurantId: i.restaurantId?.toString(),
   };
 }
