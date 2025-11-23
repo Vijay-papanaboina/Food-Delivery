@@ -48,7 +48,7 @@ export const checkRestaurantStatus = async (req, res) => {
 export const markOrderAsReady = async (req, res) => {
   try {
     const { orderId } = req.params;
-    const result = await markOrderAsReadyService(orderId, req.producer);
+    const result = await markOrderAsReadyService(orderId, req.user.userId, req.producer);
 
     res.json({
       message: "Order marked as ready successfully",

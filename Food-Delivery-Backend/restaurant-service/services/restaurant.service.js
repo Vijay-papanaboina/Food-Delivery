@@ -7,11 +7,13 @@ import {
   getRestaurantStatus,
 } from "../repositories/restaurants.repo.js";
 import {
+  getKitchenOrder,
   getKitchenOrders,
 } from "../repositories/kitchen.repo.js";
 import { transformKitchenOrder, transformRestaurant } from "../utils/dataTransformation.js";
 import { markOrderReady } from "../handlers/restaurant.handlers.js";
 import { logger } from "../utils/logger.js";
+import mongoose from "mongoose";
 
 export const listRestaurantsService = async (filters) => {
   logger.info("Getting restaurants", { filters });
@@ -63,12 +65,12 @@ export const listKitchenOrdersService = async (userId, status) => {
     throw error;
   }
 
-  const filters = { restaurantId: restaurant._id };
+  const filters = { restaurantId: new mongoose.Types.ObjectId(restaurant.id) };
   if (status) filters.status = status;
 
   logger.info("Getting kitchen orders", {
     userId,
-    restaurantId: restaurant._id,
+    restaurantId: restaurant.id,
     filters,
   });
 
@@ -79,7 +81,7 @@ export const listKitchenOrdersService = async (userId, status) => {
 
   logger.info("Kitchen orders retrieved successfully", {
     userId,
-    restaurantId: restaurant._id,
+    restaurantId: restaurant.id,
     orderCount: orders.length,
   });
 
@@ -115,10 +117,31 @@ export const checkRestaurantStatusService = async (restaurantId) => {
   return { restaurantId, isOpen: open, reason };
 };
 
-export const markOrderAsReadyService = async (orderId, producer) => {
+export const markOrderAsReadyService = async (orderId, userId, producer) => {
   if (!orderId || typeof orderId !== "string") {
     const error = new Error("Invalid orderId: must be a non-empty string");
     error.statusCode = 400;
+    throw error;
+  }
+
+  // Check ownership
+  const restaurant = await getRestaurantByOwner(userId);
+  if (!restaurant) {
+     const error = new Error("Unauthorized: You do not own a restaurant");
+     error.statusCode = 403;
+     throw error;
+  }
+  
+  const order = await getKitchenOrder(new mongoose.Types.ObjectId(orderId));
+  if (!order) {
+    const error = new Error("Order not found");
+    error.statusCode = 404;
+    throw error;
+  }
+  
+  if (order.restaurantId.toString() !== restaurant.id) {
+    const error = new Error("Unauthorized: You do not own this order");
+    error.statusCode = 403;
     throw error;
   }
 
