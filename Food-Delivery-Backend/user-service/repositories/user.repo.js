@@ -12,7 +12,7 @@ export const getUserByEmail = async (email) => {
 };
 
 export const getUserById = async (id) => {
-  return await User.findById(id);
+  return await User.findById(id).lean();
 };
 
 export const updateUser = async (id, userData) => {
@@ -20,7 +20,7 @@ export const updateUser = async (id, userData) => {
     id,
     { $set: userData },
     { new: true, runValidators: true }
-  );
+  ).lean();
 };
 
 export const deleteUser = async (id) => {
@@ -50,19 +50,6 @@ export const getAddressesByUserId = async (userId) => {
     }
     return b.isDefault - a.isDefault;
   });
-};
-
-export const getAddressById = async (addressId, userId) => {
-  const user = await User.findById(userId);
-  if (!user) return null;
-  
-  return user.addresses.find(addr => addr.id === addressId);
-};
-
-export const updateAddress = async (addressId, userId, addressData) => {
-  const user = await User.findById(userId);
-  if (!user) throw new Error("User not found");
-  
   const address = user.addresses.id(addressId);
   if (!address) throw new Error("Address not found");
   
