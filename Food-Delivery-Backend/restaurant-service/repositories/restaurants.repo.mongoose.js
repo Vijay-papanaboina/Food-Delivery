@@ -39,6 +39,9 @@ export async function getRestaurantByOwner(ownerId) {
 export async function getRestaurants(filters = {}) {
   const query = {};
 
+  if (filters.search) {
+    query.name = { $regex: new RegExp(filters.search, "i") };
+  }
   if (filters.cuisine) {
     query.cuisine = { $regex: new RegExp(filters.cuisine, "i") };
   }

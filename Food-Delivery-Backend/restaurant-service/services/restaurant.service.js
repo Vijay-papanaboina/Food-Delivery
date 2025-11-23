@@ -17,6 +17,7 @@ export const listRestaurantsService = async (filters) => {
   logger.info("Getting restaurants", { filters });
   
   const queryFilters = {};
+  if (filters.search) queryFilters.search = filters.search;
   if (filters.cuisine) queryFilters.cuisine = filters.cuisine;
   if (filters.isActive !== undefined) queryFilters.isActive = filters.isActive === "true";
   if (filters.minRating) queryFilters.minRating = filters.minRating;

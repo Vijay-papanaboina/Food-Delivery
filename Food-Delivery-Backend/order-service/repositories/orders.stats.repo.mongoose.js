@@ -1,9 +1,16 @@
 import { Order } from "../db/mongoose-schema.js";
 import { logger } from "../utils/logger.js";
 
-export async function getUserOrders(userId, limit = 10) {
+export async function getUserOrders(userId, filters = {}) {
   try {
-    const orders = await Order.find({ userId })
+    const { status, limit = 10 } = filters;
+    const query = { userId };
+    
+    if (status) {
+      query.status = status;
+    }
+
+    const orders = await Order.find(query)
       .sort({ createdAt: -1 })
       .limit(Number(limit));
 

@@ -1,0 +1,30 @@
+{
+  "name": "food-delivery-platform",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "Food-Delivery-Backend/*-service",
+    "Food-Delivery-Backend",
+    "Food-Delivery-*-Frontend"
+  ],
+  "scripts": {
+    "postinstall": "echo 'Workspaces installed successfully'",
+    
+    "infra:up": "docker-compose -f Food-Delivery-Backend/docker-compose.yml up -d",
+    "infra:down": "docker-compose -f Food-Delivery-Backend/docker-compose.yml down",
+    "infra:logs": "docker-compose -f Food-Delivery-Backend/docker-compose.yml logs -f",
+    
+    "db:seed": "npm run seed --prefix Food-Delivery-Backend",
+    "db:wait": "wait-on tcp:27017 tcp:9092 --timeout 60000",
+    
+    "dev:backend": "concurrently -k -n \"USER,ORDER,PAY,DELIV,REST,NOTIF\" -c \"blue,magenta,green,cyan,yellow,white\" \"npm run dev --prefix Food-Delivery-Backend/user-service\" \"npm run dev --prefix Food-Delivery-Backend/order-service\" \"npm run dev --prefix Food-Delivery-Backend/payment-service\" \"npm run dev --prefix Food-Delivery-Backend/delivery-service\" \"npm run dev --prefix Food-Delivery-Backend/restaurant-service\" \"npm run dev --prefix Food-Delivery-Backend/notification-service\"",
+    
+    "dev:frontend": "concurrently -k -n \"CUST,REST,DRIV\" -c \"bgBlue,bgYellow,bgCyan\" \"npm run dev --prefix Food-Delivery-Customer-Frontend\" \"npm run dev --prefix Food-Delivery-Restaurant-Frontend\" \"npm run dev --prefix Food-Delivery-Courier-Frontend\"",
+    
+    "dev": "npm run infra:up && echo 'Waiting for Infra...' && npm run db:wait && echo 'Seeding Database...' && npm run db:seed && echo 'Starting Services...' && concurrently -k \"npm run dev:backend\" \"npm run dev:frontend\""
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "wait-on": "^7.2.0"
+  }
+}
