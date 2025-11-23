@@ -1,4 +1,4 @@
-import { Delivery, Driver } from "../db/mongoose-schema.js";
+import { Delivery, Driver } from "../db/schema.js";
 
 export async function createDelivery(deliveryData) {
   const delivery = new Delivery({

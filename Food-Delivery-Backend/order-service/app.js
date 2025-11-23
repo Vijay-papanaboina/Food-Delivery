@@ -2,7 +2,7 @@ import express from "express";
 import cors from "cors";
 import morgan from "morgan";
 import buildRoutes from "./routes/index.routes.js";
-import { getOrderStats } from "./repositories/orders.stats.repo.mongoose.js";
+import { getOrderStats } from "./repositories/orders.stats.repo.js";
 
 const SERVICE_NAME = process.env.SERVICE_NAME || "order-service";
 

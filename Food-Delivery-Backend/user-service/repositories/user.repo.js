@@ -1,4 +1,4 @@
-import { User } from "../db/mongoose-schema.js";
+import { User } from "../db/schema.js";
 
 // User operations
 export const createUser = async (userData) => {

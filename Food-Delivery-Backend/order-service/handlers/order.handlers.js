@@ -1,4 +1,4 @@
-import { getOrder, updateOrderStatus } from "../repositories/orders.repo.mongoose.js";
+import { getOrder, updateOrderStatus } from "../repositories/orders.repo.js";
 import { publishMessage, TOPICS } from "../config/kafka.js";
 
 /**

@@ -5,9 +5,9 @@ import {
   deleteMenuItemRow,
   setMenuItemAvailability,
   getMenuItemsByIds,
-} from "../repositories/menu.repo.mongoose.js";
+} from "../repositories/menu.repo.js";
 import { transformMenuItem } from "../utils/dataTransformation.js";
-import { getRestaurant } from "../repositories/restaurants.repo.mongoose.js";
+import { getRestaurant } from "../repositories/restaurants.repo.js";
 import { logger } from "../utils/logger.js";
 
 export const addMenuItemService = async (restaurantId, itemData) => {

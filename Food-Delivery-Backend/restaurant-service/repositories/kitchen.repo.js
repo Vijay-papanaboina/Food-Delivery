@@ -1,4 +1,4 @@
-import { KitchenOrder } from "../db/mongoose-schema.js";
+import { KitchenOrder } from "../db/schema.js";
 
 export async function upsertKitchenOrder(orderData) {
   // Check if order exists by orderId (from order-service)

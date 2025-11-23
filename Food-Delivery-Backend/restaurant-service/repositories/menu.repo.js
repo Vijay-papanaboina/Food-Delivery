@@ -1,4 +1,4 @@
-import { MenuItem } from "../db/mongoose-schema.js";
+import { MenuItem } from "../db/schema.js";
 import mongoose from "mongoose";
 
 export async function upsertMenuItem(menuItemData) {

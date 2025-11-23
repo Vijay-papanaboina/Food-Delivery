@@ -5,10 +5,10 @@ import {
   getRestaurantStats,
   toggleRestaurantStatus as toggleRestaurantStatusRepo,
   getRestaurantStatus,
-} from "../repositories/restaurants.repo.mongoose.js";
+} from "../repositories/restaurants.repo.js";
 import {
   getKitchenOrders,
-} from "../repositories/kitchen.repo.mongoose.js";
+} from "../repositories/kitchen.repo.js";
 import { transformKitchenOrder, transformRestaurant } from "../utils/dataTransformation.js";
 import { markOrderReady } from "../handlers/restaurant.handlers.js";
 import { logger } from "../utils/logger.js";

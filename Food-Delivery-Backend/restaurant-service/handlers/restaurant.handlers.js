@@ -1,10 +1,10 @@
-import { upsertRestaurant } from "../repositories/restaurants.repo.mongoose.js";
-import { upsertMenuItem } from "../repositories/menu.repo.mongoose.js";
+import { upsertRestaurant } from "../repositories/restaurants.repo.js";
+import { upsertMenuItem } from "../repositories/menu.repo.js";
 import {
   upsertKitchenOrder,
   getKitchenOrder,
   updateKitchenOrderStatus,
-} from "../repositories/kitchen.repo.mongoose.js";
+} from "../repositories/kitchen.repo.js";
 import { publishMessage, TOPICS } from "../config/kafka.js";
 
 // Preparation configuration (10 seconds fixed)

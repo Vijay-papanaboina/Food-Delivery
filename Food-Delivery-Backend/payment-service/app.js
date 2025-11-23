@@ -2,7 +2,7 @@ import express from "express";
 import cors from "cors";
 import morgan from "morgan";
 import buildRoutes from "./routes/index.routes.js";
-import { getPaymentsCount } from "./repositories/payments.repo.mongoose.js";
+import { getPaymentsCount } from "./repositories/payments.repo.js";
 
 const SERVICE_NAME = process.env.SERVICE_NAME || "payment-service";
 

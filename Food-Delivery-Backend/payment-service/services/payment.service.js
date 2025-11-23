@@ -1,4 +1,4 @@
-import { upsertPayment } from "../repositories/payments.repo.mongoose.js";
+import { upsertPayment } from "../repositories/payments.repo.js";
 import { logger } from "../utils/logger.js";
 import { stripe, STRIPE_CONFIG } from "../config/stripe.js";
 

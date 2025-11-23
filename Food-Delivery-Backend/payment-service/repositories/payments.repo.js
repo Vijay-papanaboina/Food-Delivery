@@ -1,4 +1,4 @@
-import { Payment } from "../db/mongoose-schema.js";
+import { Payment } from "../db/schema.js";
 
 export async function upsertPayment(p) {
   const paymentData = {

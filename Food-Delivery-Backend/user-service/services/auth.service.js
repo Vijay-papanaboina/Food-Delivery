@@ -1,5 +1,5 @@
 import bcrypt from "bcrypt";
-import { createUser, getUserByEmail, getUserById } from "../repositories/user.repo.mongoose.js";
+import { createUser, getUserByEmail, getUserById } from "../repositories/user.repo.js";
 import { generateTokens, verifyToken } from "../config/jwt.js";
 import { logger } from "../utils/logger.js";
 import { transformUser } from "../utils/dataTransformation.js";

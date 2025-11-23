@@ -2,8 +2,8 @@ import express from "express";
 import cors from "cors";
 import morgan from "morgan";
 import buildRoutes from "./routes/index.routes.js";
-import { getDeliveryStats } from "./repositories/deliveries.repo.mongoose.js";
-import { getDrivers } from "./repositories/drivers.repo.mongoose.js";
+import { getDeliveryStats } from "./repositories/deliveries.repo.js";
+import { getDrivers } from "./repositories/drivers.repo.js";
 
 const SERVICE_NAME = process.env.SERVICE_NAME || "delivery-service";
 

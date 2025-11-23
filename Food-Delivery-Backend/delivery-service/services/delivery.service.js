@@ -7,12 +7,12 @@ import {
   declineDelivery as declineDeliveryRepo,
   getDeliveryWithFullDetails,
   getDelivery,
-} from "../repositories/deliveries.repo.mongoose.js";
+} from "../repositories/deliveries.repo.js";
 import {
-  getDrivers,
-  updateDriverAvailability,
-  getDriverByUserId,
-} from "../repositories/drivers.repo.mongoose.js";
+  getDriver,
+  updateDriverStatus,
+  findAvailableDriver,
+} from "../repositories/drivers.repo.js";
 import { transformDelivery, transformDriver } from "../utils/dataTransformation.js";
 import {
   pickupDelivery,

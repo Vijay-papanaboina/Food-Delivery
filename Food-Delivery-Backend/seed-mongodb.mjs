@@ -5,9 +5,9 @@ import {
   menuItemsData,
   driversData,
 } from "./mock-data.js";
-import { userSchema } from "./user-service/db/mongoose-schema.js";
-import { driverSchema } from "./delivery-service/db/mongoose-schema.js";
-import { restaurantSchema, menuItemSchema } from "./restaurant-service/db/mongoose-schema.js";
+import { userSchema } from "./user-service/db/schema.js";
+import { driverSchema } from "./delivery-service/db/schema.js";
+import { restaurantSchema, menuItemSchema } from "./restaurant-service/db/schema.js";
 
 // MongoDB connection URLs
 const MONGO_URI_USERS = "mongodb://admin:admin123@localhost:27017/user_service?authSource=admin";

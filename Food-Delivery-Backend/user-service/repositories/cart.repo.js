@@ -1,4 +1,4 @@
-import { User } from "../db/mongoose-schema.js";
+import { User } from "../db/schema.js";
 
 // Get all cart items for a user
 export const getCartItemsByUserId = async (userId) => {

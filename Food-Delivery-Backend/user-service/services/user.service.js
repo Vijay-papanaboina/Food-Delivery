@@ -8,7 +8,7 @@ import {
   updateAddress,
   deleteAddress,
   setDefaultAddress,
-} from "../repositories/user.repo.mongoose.js";
+} from "../repositories/user.repo.js";
 import { logger } from "../utils/logger.js";
 
 export const getProfileService = async (userId) => {

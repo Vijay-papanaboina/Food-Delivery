@@ -1,4 +1,4 @@
-import { Restaurant } from "../db/mongoose-schema.js";
+import { Restaurant } from "../db/schema.js";
 
 export async function upsertRestaurant(restaurantData) {
   // If ID is provided, try to find and update

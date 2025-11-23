@@ -4,7 +4,7 @@ import {
   getDriver,
   getDriverByUserId,
   updateDriverAvailability,
-} from "../repositories/drivers.repo.mongoose.js";
+} from "../repositories/drivers.repo.js";
 import {
   upsertDelivery,
   updateDeliveryFields,
@@ -12,7 +12,7 @@ import {
   createDelivery,
   declineDelivery,
   findAvailableDriverForReassignment,
-} from "../repositories/deliveries.repo.mongoose.js";
+} from "../repositories/deliveries.repo.js";
 import { publishMessage, TOPICS } from "../config/kafka.js";
 
 /**
@@ -269,7 +269,7 @@ export async function autoAssignDriver(orderData, producer, serviceName) {
 
     // Get all available drivers (not currently on delivery)
     // Mongoose repo returns camelCase
-    const availableDrivers = await import("../repositories/drivers.repo.mongoose.js").then(m => m.getDrivers({ isAvailable: true }));
+    const availableDrivers = await import("../repositories/drivers.repo.js").then(m => m.getDrivers({ isAvailable: true }));
 
     console.log(
       `📊 [${serviceName}] Found ${availableDrivers.length} available drivers`
@@ -502,7 +502,7 @@ export async function handleFoodReady(orderData, producer, serviceName) {
 
     // Enrich delivery with order details
     const { enrichDeliveryWithOrderDetails } = await import(
-      "../repositories/deliveries.repo.mongoose.js"
+      "../repositories/deliveries.repo.js"
     );
     await enrichDeliveryWithOrderDetails(assignedDriver.deliveryId, {
       restaurantId,

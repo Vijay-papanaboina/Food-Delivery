@@ -2,15 +2,15 @@ import {
   upsertOrder,
   getOrder,
   updateOrderStatus,
-} from "../repositories/orders.repo.mongoose.js";
+} from "../repositories/orders.repo.js";
 import {
   getUserOrders,
   getOrderStats as getOrderStatsRepo,
   getRestaurantOrders,
-} from "../repositories/orders.stats.repo.mongoose.js";
+} from "../repositories/orders.stats.repo.js";
 import { TOPICS, publishMessage } from "../config/kafka.js";
 import { logger } from "../utils/logger.js";
-import { Order } from "../db/mongoose-schema.js";
+import { Order } from "../db/schema.js";
 import { transformOrder } from "../utils/dataTransformation.js";
 
 export const createOrder = async (userId, orderData, producer) => {

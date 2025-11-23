@@ -2,7 +2,7 @@ import {
   getCartItemsByUserId,
   upsertCartItem,
   clearCartByUserId,
-} from "../repositories/cart.repo.mongoose.js";
+} from "../repositories/cart.repo.js";
 import { logger } from "../utils/logger.js";
 
 export const getCartService = async (userId) => {

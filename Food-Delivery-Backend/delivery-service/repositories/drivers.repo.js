@@ -1,4 +1,4 @@
-import { Driver } from "../db/mongoose-schema.js";
+import { Driver } from "../db/schema.js";
 
 export async function upsertDriver(driver) {
   const update = {

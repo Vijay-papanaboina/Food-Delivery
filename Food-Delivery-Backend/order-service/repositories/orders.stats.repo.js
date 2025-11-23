@@ -1,4 +1,4 @@
-import { Order } from "../db/mongoose-schema.js";
+import { Order } from "../db/schema.js";
 import { logger } from "../utils/logger.js";
 
 export async function getUserOrders(userId, filters = {}) {

@@ -2,7 +2,7 @@ import { stripe } from "../config/stripe.js";
 import {
   updatePaymentFields,
   getPaymentByOrderId,
-} from "../repositories/payments.repo.mongoose.js";
+} from "../repositories/payments.repo.js";
 import { publishMessage, TOPICS } from "../config/kafka.js";
 import { logger } from "../utils/logger.js";
 
