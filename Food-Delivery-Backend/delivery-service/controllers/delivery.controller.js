@@ -10,6 +10,7 @@ import {
   declineDeliveryService,
   getDeliveryDetailsService,
 } from "../services/delivery.service.js";
+import {logger} from "../utils/logger.js";
 
 export const getDeliveryByOrder = async (req, res) => {
   try {
@@ -20,10 +21,9 @@ export const getDeliveryByOrder = async (req, res) => {
       delivery,
     });
   } catch (error) {
-    console.error(
-      `❌ [delivery-service] Error retrieving delivery:`,
-      error.message
-    );
+    logger.error("Error retrieving delivery", {
+      error: error.message,
+    });
     if (error.statusCode) {
       return res.status(error.statusCode).json({ error: error.message });
     }
@@ -43,7 +43,9 @@ export const listDeliveries = async (req, res) => {
       total: deliveries.length,
     });
   } catch (error) {
-    console.error("Error in listDeliveries:", error);
+    logger.error("Error in listDeliveries", {
+      error: error.message,
+    });
     if (error.statusCode) {
       return res.status(error.statusCode).json({ error: error.message, message: error.details });
     }

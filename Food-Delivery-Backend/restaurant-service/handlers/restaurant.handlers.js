@@ -138,7 +138,7 @@ export async function markOrderReady(orderId, producer, serviceName) {
 
   // Fetch restaurant details
   // Use Mongoose repo
-  const { getRestaurant } = await import("../repositories/restaurants.repo.mongoose.js");
+  const { getRestaurant } = await import("../repositories/restaurants.repo.js");
   const restaurant = await getRestaurant(order.restaurantId);
 
   // Publish food-ready event with restaurant and order details

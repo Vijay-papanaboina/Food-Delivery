@@ -13,8 +13,8 @@ export const upsertCartItem = async (userId, itemId, quantity) => {
   const user = await User.findById(userId);
   if (!user) throw new Error("User not found");
   
-  // Find existing cart item
-  const existingItem = user.cart.find((item) => item.itemId === itemId);
+  // Find existing cart item (compare ObjectId as string)
+  const existingItem = user.cart.find((item) => item.itemId.toString() === itemId);
   
   if (existingItem) {
     // Update existing item
@@ -27,7 +27,7 @@ export const upsertCartItem = async (userId, itemId, quantity) => {
   await user.save();
   
   // Return the updated/created item
-  return user.cart.find((item) => item.itemId === itemId).toObject();
+  return user.cart.find((item) => item.itemId.toString() === itemId).toObject();
 };
 
 // Remove a specific item from cart
@@ -35,7 +35,7 @@ export const removeCartItem = async (userId, itemId) => {
   const user = await User.findById(userId);
   if (!user) throw new Error("User not found");
   
-  user.cart = user.cart.filter((item) => item.itemId !== itemId);
+  user.cart = user.cart.filter((item) => item.itemId.toString() !== itemId);
   await user.save();
 };
 

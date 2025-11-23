@@ -123,7 +123,7 @@ if ($IS_PROD) {
         exit 1
     }
 
-    Print-Warning "ACTION REQUIRED: Update your DNS A records for *.agrifacts.space to point to: $ingressIp"
+    Print-Warning "ACTION REQUIRED: Update your DNS A records for *.your.domain to point to: $ingressIp"
     $null = Read-Host "(IP copied to clipboard, press Enter to continue deployment)"
     Write-Host ""
     Print-Info "Deployment will continue. You will be asked to confirm DNS update before Ingress is applied at the end."
@@ -196,7 +196,7 @@ Write-Host ""
 # Step 5: Deploy Ingress
 Print-Step "Deploying Ingress"
 if ($IS_PROD) {
-    Print-Warning "Ensure DNS records for *.agrifacts.space point to the Ingress IP ($ingressIp)"
+    Print-Warning "Ensure DNS records for *.your.domain point to the Ingress IP ($ingressIp)"
     $null = Read-Host "Have you updated your DNS records? Press Enter to apply TLS Ingress (or Ctrl+C to cancel)..."
     Write-Host ""
 

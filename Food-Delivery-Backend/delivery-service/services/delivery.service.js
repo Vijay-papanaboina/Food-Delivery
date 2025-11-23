@@ -9,7 +9,8 @@ import {
   getDelivery,
 } from "../repositories/deliveries.repo.js";
 import {
-  getDriver,
+  getDrivers,
+  getDriverByUserId,
 } from "../repositories/drivers.repo.js";
 import { transformDelivery, transformDriver } from "../utils/dataTransformation.js";
 import {
