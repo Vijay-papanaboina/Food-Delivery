@@ -10,8 +10,6 @@ import {
 } from "../repositories/deliveries.repo.js";
 import {
   getDriver,
-  updateDriverStatus,
-  findAvailableDriver,
 } from "../repositories/drivers.repo.js";
 import { transformDelivery, transformDriver } from "../utils/dataTransformation.js";
 import {
