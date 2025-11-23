@@ -11,6 +11,7 @@ import {
 import {
   getDrivers,
   getDriverByUserId,
+  updateDriverAvailability,
 } from "../repositories/drivers.repo.js";
 import { transformDelivery, transformDriver } from "../utils/dataTransformation.js";
 import {
