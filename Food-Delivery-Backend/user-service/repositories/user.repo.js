@@ -50,6 +50,19 @@ export const getAddressesByUserId = async (userId) => {
     }
     return b.isDefault - a.isDefault;
   });
+};
+
+export const getAddressById = async (addressId, userId) => {
+  const user = await User.findById(userId);
+  if (!user) return null;
+  
+  return user.addresses.id(addressId);
+};
+
+export const updateAddress = async (addressId, userId, addressData) => {
+  const user = await User.findById(userId);
+  if (!user) throw new Error("User not found");
+  
   const address = user.addresses.id(addressId);
   if (!address) throw new Error("Address not found");
   
@@ -78,14 +91,18 @@ export const setDefaultAddress = async (addressId, userId) => {
     addr.isDefault = false;
   });
   
-  // Set the specified address as default
-  const address = user.addresses.id(addressId);
-  if (!address) throw new Error("Address not found");
+  // Set the specified address as default if provided
+  if (addressId) {
+    const address = user.addresses.id(addressId);
+    if (!address) throw new Error("Address not found");
+    
+    address.isDefault = true;
+    await user.save();
+    return address.toObject();
+  }
   
-  address.isDefault = true;
   await user.save();
-  
-  return address.toObject();
+  return null;
 };
 
 export const getDefaultAddress = async (userId) => {

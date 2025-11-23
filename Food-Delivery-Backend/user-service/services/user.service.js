@@ -72,8 +72,7 @@ export const addAddressService = async (userId, addressData) => {
     await setDefaultAddress(null, userId); 
   }
 
-  return await createAddress({
-    userId,
+  return await createAddress(userId, {
     ...addressData,
     isDefault: addressData.isDefault || false,
   });

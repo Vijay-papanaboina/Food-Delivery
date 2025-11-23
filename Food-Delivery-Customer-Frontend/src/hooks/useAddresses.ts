@@ -79,8 +79,7 @@ export const useSetDefaultAddress = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (addressId: string) =>
-      userApi.updateAddress(addressId, { isDefault: true }),
+    mutationFn: (addressId: string) => userApi.setDefaultAddress(addressId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["user", "addresses"] });
       toast.success("Default address updated successfully!");

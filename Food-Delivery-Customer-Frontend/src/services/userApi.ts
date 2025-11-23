@@ -122,6 +122,18 @@ export class UserApi extends ApiService {
     return result;
   };
 
+  setDefaultAddress = async (id: string): Promise<{ message: string; address: DeliveryAddress }> => {
+    const result = await this.put<{
+      message: string;
+      address: DeliveryAddress;
+    }>(`/api/user-service/users/addresses/${id}/default`, {});
+
+    return {
+      message: result.message,
+      address: result.address,
+    };
+  };
+
   getCart = async (): Promise<{
     message: string;
     items: Array<{ id: string; quantity: number }>;
