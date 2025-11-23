@@ -286,7 +286,7 @@ main() {
             exit 1
         fi
 
-        print_warning "ACTION REQUIRED: Update your DNS A records for *.agrifacts.space to point to: $INGRESS_IP"
+        print_warning "ACTION REQUIRED: Update your DNS A records for *.yourdomain.com to point to: $INGRESS_IP"
         read -p "(IP copied to clipboard, press Enter to continue deployment) " -n 1 -r || true # Non-blocking for deployment logic
         echo ""
         print_info "Deployment will continue. You will be asked to confirm DNS update before Ingress is applied at the end."
